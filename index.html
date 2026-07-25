@@ -67,7 +67,7 @@
       max-width: 640px;
       margin: 0 auto;
       padding: 24px 16px;
-      padding-top: calc(24px + env(safe-area-inset-top));
+      padding-top: calc(44px + env(safe-area-inset-top));
       padding-bottom: calc(24px + env(safe-area-inset-bottom));
       padding-left: calc(16px + env(safe-area-inset-left));
       padding-right: calc(16px + env(safe-area-inset-right));
@@ -1330,6 +1330,10 @@
       </div>
       <div class="calendar-grid" id="calendarGrid"></div>
       <div class="month-summary" id="monthSummary"></div>
+      <div class="year-habits-section">
+        <h3>Habit Stats</h3>
+        <div id="monthHabitsList"></div>
+      </div>
     </div>
 
     <!-- Year overview view -->
@@ -2109,6 +2113,25 @@
       document.getElementById('monthSummary').innerHTML = `
         <div class="summary-value">${monthlyPct}%</div>
         <div class="summary-label">Monthly Average</div>`;
+
+      const habitsList = document.getElementById('monthHabitsList');
+      habitsList.innerHTML = '';
+      for (const habit of state.habits) {
+        if (!isHabitVisible(habit)) continue;
+        const stats = getMonthPctForHabit(habit.id, year, month);
+        const c = stats.pct > 0 ? pctToColor(stats.pct) : null;
+
+        const row = document.createElement('div');
+        row.className = 'year-habit-row';
+        row.innerHTML = `
+          <span class="habit-icon">${habit.icon}</span>
+          <span class="habit-name">${escapeHtml(habit.name)}</span>
+          <div class="year-habit-stats">
+            <span class="year-habit-count">${stats.done}/${stats.total}d</span>
+            <span class="year-habit-pct" style="background:${c ? c.bg : 'var(--accent-light)'}; color:${c ? c.text : 'var(--accent)'}">${stats.pct}%</span>
+          </div>`;
+        habitsList.appendChild(row);
+      }
     }
 
     // --- Year Overview ---
@@ -2137,6 +2160,25 @@
         }
       }
       return { pct: totalApplicable > 0 ? Math.round((totalChecks / totalApplicable) * 100) : 0, future: false };
+    }
+
+    function getMonthPctForHabit(habitId, year, month) {
+      const habit = state.habits.find(h => h.id === habitId);
+      const today = new Date();
+      if (new Date(year, month, 1) > today) return { done: 0, total: 0, pct: 0 };
+
+      const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+      const daysInMonth = isCurrentMonth ? today.getDate() : new Date(year, month + 1, 0).getDate();
+
+      let totalDays = 0;
+      let doneDays = 0;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        if (habit && !habitApplies(habit, ds)) continue;
+        totalDays++;
+        if (state.completions[`${ds}_${habitId}`]) doneDays++;
+      }
+      return { done: doneDays, total: totalDays, pct: totalDays > 0 ? Math.round((doneDays / totalDays) * 100) : 0 };
     }
 
     function getYearPctForHabit(habitId, year) {
