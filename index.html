@@ -2264,6 +2264,7 @@
             const ds = `${year}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const tags = getDayTags(ds);
             for (const tag of tags) {
+              if (tag.type !== 'trip') continue;
               const key = `${tag.emoji}${tag.text}`;
               if (!seen.has(key)) {
                 seen.add(key);
