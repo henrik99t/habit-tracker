@@ -1239,13 +1239,6 @@
     <header>
       <h1>Habits</h1>
       <div class="header-actions">
-        <button class="icon-btn" id="exportBackup" title="Export backup">
-          <span>&#8681;</span>
-        </button>
-        <button class="icon-btn" id="importBackup" title="Import backup">
-          <span>&#8679;</span>
-        </button>
-        <input type="file" id="importFileInput" accept="application/json,.json" style="display:none">
         <button class="icon-btn" id="themeToggle" title="Toggle theme">
           <span id="themeIcon">&#9789;</span>
         </button>
@@ -2712,60 +2705,6 @@
 
       document.getElementById('signOutBtn').onclick = () => {
         if (confirm('Sign out? Your data stays in the cloud.')) doSignOut();
-      };
-
-      document.getElementById('exportBackup').onclick = () => {
-        const payload = {
-          version: 1,
-          exportedAt: new Date().toISOString(),
-          state,
-        };
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const stamp = todayStr();
-        a.href = url;
-        a.download = `habit-tracker-backup-${stamp}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      };
-
-      const importInput = document.getElementById('importFileInput');
-      document.getElementById('importBackup').onclick = () => importInput.click();
-      importInput.onchange = () => {
-        const file = importInput.files && importInput.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const parsed = JSON.parse(reader.result);
-            const incoming = parsed && parsed.state ? parsed.state : parsed;
-            if (!incoming || typeof incoming !== 'object' || !Array.isArray(incoming.habits) || typeof incoming.completions !== 'object') {
-              alert('This file does not look like a habit tracker backup.');
-              return;
-            }
-            const habitCount = incoming.habits.length;
-            const dayCount = Object.keys(incoming.completions).length;
-            const ok = confirm(`Replace current data with backup?\n\n${habitCount} habits, ${dayCount} tracked days.\n\nThis overwrites everything currently in this browser.`);
-            if (!ok) return;
-            if (!incoming.comments) incoming.comments = {};
-            if (!incoming.dayTags) incoming.dayTags = {};
-            if (incoming.hidePorn === undefined) incoming.hidePorn = false;
-            if (!incoming.theme) incoming.theme = state.theme;
-            state = incoming;
-            saveState();
-            applyTheme();
-            render();
-            alert('Backup restored.');
-          } catch (e) {
-            alert('Could not read that file: ' + e.message);
-          } finally {
-            importInput.value = '';
-          }
-        };
-        reader.readAsText(file);
       };
 
       document.getElementById('prevDay').onclick = () => { selectedDate = dateAdd(selectedDate, -1); render(); };
