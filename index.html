@@ -230,7 +230,7 @@
       margin-top: 4px;
     }
 
-    /* Progress bar under daily % — absolute so it doesn't push content around */
+    /* Progress bar — absolute so it doesn't push content around */
     .progress-bar-bg {
       position: absolute;
       left: 14px;
@@ -240,6 +240,10 @@
       background: var(--border);
       border-radius: 2px;
       overflow: hidden;
+    }
+
+    .progress-bar-bg.subtle {
+      opacity: 0.4;
     }
 
     .progress-bar-fill {
@@ -962,7 +966,8 @@
     }
 
     .tag-add-btn {
-      padding: 8px 14px;
+      flex: 1;
+      padding: 8px 6px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--bg-card);
@@ -971,6 +976,9 @@
       cursor: pointer;
       transition: border-color 0.15s, background 0.15s;
       box-shadow: var(--shadow);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .tag-add-btn:hover {
@@ -1219,10 +1227,10 @@
       </div>
       <div class="header-actions">
         <button class="icon-btn" id="themeToggle" title="Toggle theme">
-          <span id="themeIcon">&#9789;</span>
+          <span id="themeIcon"></span>
         </button>
         <button class="icon-btn" id="signOutBtn" title="Sign out">
-          <span>&#9099;</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
         </button>
       </div>
     </header>
@@ -1256,10 +1264,16 @@
       <div class="stat-card">
         <div class="stat-value" id="statMonthlyPct">0%</div>
         <div class="stat-label" id="monthlyLabel">March</div>
+        <div class="progress-bar-bg subtle">
+          <div class="progress-bar-fill" id="monthlyProgressBar" style="width: 0%"></div>
+        </div>
       </div>
       <div class="stat-card">
         <div class="stat-value" id="statDone">0/0</div>
         <div class="stat-label">Done</div>
+        <div class="progress-bar-bg subtle">
+          <div class="progress-bar-fill" id="doneProgressBar" style="width: 0%"></div>
+        </div>
       </div>
     </div>
 
@@ -1955,9 +1969,12 @@
       document.getElementById('statDailyPct').textContent = daily.pct + '%';
       document.getElementById('dailyProgressBar').style.width = daily.pct + '%';
       document.getElementById('statDone').textContent = `${daily.done}/${daily.total}`;
+      const donePct = daily.total ? Math.round((daily.done / daily.total) * 100) : 0;
+      document.getElementById('doneProgressBar').style.width = donePct + '%';
 
       const monthlyPct = getOverallMonthlyPct(selectedDate);
       document.getElementById('statMonthlyPct').textContent = monthlyPct + '%';
+      document.getElementById('monthlyProgressBar').style.width = monthlyPct + '%';
       const monthName = parseDate(selectedDate).toLocaleDateString('en-US', { month: 'long' });
       document.getElementById('monthlyLabel').textContent = monthName;
     }
@@ -2626,9 +2643,12 @@
     }
 
     // --- Theme ---
+    const SUN_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+    const MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
     function applyTheme() {
       document.documentElement.setAttribute('data-theme', state.theme);
-      document.getElementById('themeIcon').innerHTML = state.theme === 'dark' ? '&#9788;' : '&#9789;';
+      document.getElementById('themeIcon').innerHTML = state.theme === 'dark' ? SUN_SVG : MOON_SVG;
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.content = state.theme === 'dark' ? '#1a1a1a' : '#f5f5f7';
     }
