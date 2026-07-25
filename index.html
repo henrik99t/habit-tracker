@@ -14,37 +14,43 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #f5f5f7;
-      --bg-card: #ffffff;
-      --text: #1d1d1f;
-      --text-secondary: #6e6e73;
-      --accent: #0071e3;
-      --accent-light: #e8f2fe;
+      /* tweakcn / shadcn "slate" preset — light */
+      --bg: oklch(0.987 0.002 197.1);
+      --bg-card: oklch(1 0 0);
+      --text: oklch(0.148 0.004 228.8);
+      --text-secondary: oklch(0.56 0.021 213.5);
+      --accent: oklch(0.218 0.008 223.9);
+      --accent-light: oklch(0.963 0.002 197.1);
+      --accent-foreground: oklch(0.987 0.002 197.1);
       --success: #34c759;
       --success-light: #e8f9ee;
-      --danger: #ff3b30;
-      --danger-light: #ffe5e3;
-      --border: #e5e5ea;
-      --shadow: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
-      --radius: 12px;
-      --radius-sm: 8px;
+      --danger: oklch(0.577 0.245 27.325);
+      --danger-light: oklch(0.95 0.03 27);
+      --border: oklch(0.925 0.005 214.3);
+      --ring: oklch(0.723 0.014 214.4);
+      --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+      --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+      --radius: 10px;
+      --radius-sm: 6px;
     }
 
     [data-theme="dark"] {
-      --bg: #1c1c1e;
-      --bg-card: #2c2c2e;
-      --text: #f5f5f7;
-      --text-secondary: #98989d;
-      --accent: #0a84ff;
-      --accent-light: #1a2a3a;
+      /* tweakcn / shadcn "slate" preset — dark */
+      --bg: oklch(0.148 0.004 228.8);
+      --bg-card: oklch(0.218 0.008 223.9);
+      --text: oklch(0.987 0.002 197.1);
+      --text-secondary: oklch(0.723 0.014 214.4);
+      --accent: oklch(0.925 0.005 214.3);
+      --accent-light: oklch(0.275 0.011 216.9);
+      --accent-foreground: oklch(0.218 0.008 223.9);
       --success: #30d158;
       --success-light: #1a3a2a;
-      --danger: #ff453a;
-      --danger-light: #3a1a1a;
-      --border: #38383a;
-      --shadow: 0 1px 3px rgba(0,0,0,0.3);
-      --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
+      --danger: oklch(0.704 0.191 22.216);
+      --danger-light: oklch(0.32 0.08 22);
+      --border: oklch(1 0 0 / 10%);
+      --ring: oklch(0.56 0.021 213.5);
+      --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.30), 0 1px 2px -1px hsl(0 0% 0% / 0.30);
+      --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.40), 0 4px 6px -1px hsl(0 0% 0% / 0.40);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
