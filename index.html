@@ -1536,6 +1536,13 @@
         await pushToCloud();
       }
 
+      // Re-apply idempotent habit-spec migrations on top of the cloud state.
+      // If the cloud predated the migration, this adds the missing habits and
+      // pushes the corrected state back so the change actually sticks.
+      if (typeof applyFitnessHabits2026 === 'function' && applyFitnessHabits2026()) {
+        await pushToCloud();
+      }
+
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       localStorage.setItem('cloudSyncedFor', currentUser.id);
     }
@@ -1658,6 +1665,45 @@
         });
         saveState();
       }
+    })();
+
+    // --- Fitness plan additions (2026): daily strength/mobility program ---
+    // Idempotent via per-name guards — safe to call multiple times.
+    // Called once at file init, and again after cloud load so that a cloud
+    // state predating this migration also gets the new habits applied.
+    function applyFitnessHabits2026() {
+      const additions = [
+        { icon: '🤸',    name: 'Spagat',         schedule: null },
+        { icon: '🥩',    name: 'Protein ≥170g',  schedule: null },
+        { icon: '🏃‍♂️', name: 'Hybrid',         schedule: { days: [1, 3],    months: null } },
+        { icon: '🥊',    name: 'Kickboxing',     schedule: { days: [2],       months: null } },
+        { icon: '💪',    name: 'Kraft A',        schedule: { days: [4],       months: null } },
+        { icon: '🥊',    name: 'Sparring',       schedule: { days: [5],       months: null } },
+        { icon: '🏃',    name: 'Runclub',        schedule: { days: [6],       months: null } },
+        { icon: '💪',    name: 'Kraft B',        schedule: { days: [6],       months: null } },
+        { icon: '💥',    name: 'Core-Finisher',  schedule: { days: [2, 4, 6], months: null } },
+        { icon: '🧘‍♀️', name: 'Lange Mobility', schedule: { days: [0],       months: null } },
+      ];
+
+      let changed = false;
+      for (const h of additions) {
+        if (!state.habits.find(x => x.name === h.name)) {
+          state.habits.push({ id: generateId(), icon: h.icon, name: h.name, schedule: h.schedule });
+          changed = true;
+        }
+      }
+
+      const midnight = state.habits.find(h => h.name === '00:00');
+      if (midnight) {
+        midnight.name = '23:00';
+        changed = true;
+      }
+
+      return changed;
+    }
+
+    (function migrateFitnessHabits2026() {
+      if (applyFitnessHabits2026()) saveState();
     })();
 
     // --- One-time import: Jan/Feb/Mar 2026 data from Google Sheets CSV ---
