@@ -77,19 +77,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+    header .tab-bar {
+      flex: 1;
+      margin-bottom: 0;
     }
 
     .header-actions {
       display: flex;
       gap: 8px;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .icon-btn {
@@ -206,28 +207,38 @@
       flex: 1;
       background: var(--bg-card);
       border-radius: var(--radius);
-      padding: 14px;
+      padding: 14px 14px 20px;
       box-shadow: var(--shadow);
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      min-height: 76px;
     }
 
     .stat-card .stat-value {
       font-size: 24px;
       font-weight: 700;
+      line-height: 1.1;
     }
 
     .stat-card .stat-label {
       font-size: 12px;
       color: var(--text-secondary);
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
-    /* Progress bar under daily % */
+    /* Progress bar under daily % — absolute so it doesn't push content around */
     .progress-bar-bg {
-      height: 6px;
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 10px;
+      height: 4px;
       background: var(--border);
-      border-radius: 3px;
-      margin-top: 8px;
+      border-radius: 2px;
       overflow: hidden;
     }
 
@@ -485,48 +496,6 @@
 
     .streak-dot.done { background: var(--success); }
 
-    /* Comment section */
-    .comment-section {
-      margin-top: 24px;
-    }
-
-    .comment-section label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-
-    .comment-textarea {
-      width: 100%;
-      min-height: 80px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: inherit;
-      background: var(--bg-card);
-      color: var(--text);
-      outline: none;
-      resize: vertical;
-      transition: border-color 0.15s;
-      box-shadow: var(--shadow);
-    }
-
-    .comment-textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .comment-saved {
-      font-size: 11px;
-      color: var(--success);
-      margin-top: 4px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .comment-saved.show { opacity: 1; }
 
     /* Modal overlay */
     .modal-overlay {
@@ -1243,7 +1212,11 @@
   </div>
   <div class="container hidden">
     <header>
-      <h1>Habits</h1>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="today">Today</button>
+        <button class="tab-btn" data-tab="overview">Month</button>
+        <button class="tab-btn" data-tab="year">Year</button>
+      </div>
       <div class="header-actions">
         <button class="icon-btn" id="themeToggle" title="Toggle theme">
           <span id="themeIcon">&#9789;</span>
@@ -1253,13 +1226,6 @@
         </button>
       </div>
     </header>
-
-    <!-- Tabs -->
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="today">Today</button>
-      <button class="tab-btn" data-tab="overview">Month</button>
-      <button class="tab-btn" data-tab="year">Year</button>
-    </div>
 
     <!-- Today view -->
     <div id="viewToday">
@@ -1337,13 +1303,6 @@
         <button class="btn btn-primary" id="tagSaveBtn">Add</button>
         <button class="btn btn-secondary" id="tagCancelBtn">✕</button>
       </div>
-    </div>
-
-    <!-- Daily comment -->
-    <div class="comment-section">
-      <label>Notes for the day</label>
-      <textarea class="comment-textarea" id="commentBox" placeholder="What happened today?"></textarea>
-      <div class="comment-saved" id="commentSaved">Saved</div>
     </div>
 
     </div><!-- /viewToday -->
@@ -2052,11 +2011,6 @@
       });
     }
 
-    function renderComment() {
-      const box = document.getElementById('commentBox');
-      box.value = state.comments[selectedDate] || '';
-    }
-
     // --- Calendar / Overview ---
     function pctToColor(pct) {
       const hue = (pct / 100) * 120;
@@ -2327,7 +2281,6 @@
       renderStats();
       renderHabits();
       renderDayTags();
-      renderComment();
     }
 
     function escapeHtml(str) {
@@ -2672,24 +2625,6 @@
       closeTagInput();
     }
 
-    // --- Comment auto-save ---
-    let commentTimeout;
-    function onCommentInput() {
-      const val = document.getElementById('commentBox').value;
-      if (val.trim()) {
-        state.comments[selectedDate] = val;
-      } else {
-        delete state.comments[selectedDate];
-      }
-      clearTimeout(commentTimeout);
-      commentTimeout = setTimeout(() => {
-        saveState();
-        const saved = document.getElementById('commentSaved');
-        saved.classList.add('show');
-        setTimeout(() => saved.classList.remove('show'), 1500);
-      }, 500);
-    }
-
     // --- Theme ---
     function applyTheme() {
       document.documentElement.setAttribute('data-theme', state.theme);
@@ -2752,8 +2687,6 @@
       document.getElementById('editNameInput').onkeydown = (e) => {
         if (e.key === 'Enter') saveEditedHabit();
       };
-
-      document.getElementById('commentBox').oninput = onCommentInput;
 
       // Day tag buttons
       document.querySelectorAll('.tag-add-btn').forEach(btn => {
