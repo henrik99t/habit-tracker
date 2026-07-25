@@ -1229,6 +1229,10 @@
       <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email" inputmode="email">
       <button id="authSendLink">Send magic link</button>
       <div class="auth-message" id="authMessage"></div>
+      <div id="authLocalInfo" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);">
+        <div id="authLocalCount" style="margin-bottom:10px;"></div>
+        <button id="authBackupLocal" style="background:var(--text-secondary);font-size:14px;">Backup this device's data</button>
+      </div>
     </div>
   </div>
   <div class="container hidden">
@@ -1566,6 +1570,38 @@
       const emailInput = document.getElementById('authEmail');
       const btn = document.getElementById('authSendLink');
       const msg = document.getElementById('authMessage');
+
+      // Show local data count + backup button on the auth screen
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const info = document.getElementById('authLocalCount');
+        const backupBtn = document.getElementById('authBackupLocal');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const habits = (parsed.habits || []).length;
+          const entries = Object.keys(parsed.completions || {}).length;
+          info.textContent = `This device: ${habits} habits, ${entries} entries.`;
+          backupBtn.onclick = () => {
+            const blob = new Blob(
+              [JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), state: parsed }, null, 2)],
+              { type: 'application/json' }
+            );
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            const d = new Date();
+            const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            a.download = `habits-backup-${stamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            alert(`${entries} entries exported. Save this file somewhere safe (iCloud Drive).`);
+          };
+        } else {
+          document.getElementById('authLocalInfo').style.display = 'none';
+        }
+      } catch (e) {
+        document.getElementById('authLocalInfo').style.display = 'none';
+      }
 
       const send = async () => {
         const email = emailInput.value.trim();
