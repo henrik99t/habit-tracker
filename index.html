@@ -2150,8 +2150,8 @@
               </span>
             </div>
           </div>
-          ${streak > 0 ? `<span class="habit-streak-badge"><span class="fire">&#128293;</span>${streak}d</span>` : ''}
           <span class="habit-month-pct">${monthPct.pct}%</span>
+          ${streak > 0 ? `<span class="habit-streak-badge"><span class="fire">&#128293;</span>${streak}d</span>` : ''}
           <div class="habit-actions">
             <button title="Edit" data-edit="${habit.id}">&#9998;</button>
             <button title="Delete" data-delete="${habit.id}">&times;</button>
