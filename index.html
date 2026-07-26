@@ -811,7 +811,37 @@
     .year-habits-section h3 {
       font-size: 16px;
       font-weight: 600;
+    }
+
+    .habit-stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       margin-bottom: 12px;
+    }
+
+    .habit-filter-chips {
+      display: flex;
+      gap: 6px;
+    }
+
+    .habit-filter-chip {
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .habit-filter-chip.active {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      border-color: var(--accent);
     }
 
     .year-habit-row {
@@ -1346,7 +1376,13 @@
       <div class="year-summary" id="yearSummary"></div>
       <div class="year-grid" id="yearGrid"></div>
       <div class="year-habits-section">
-        <h3>Habit Stats</h3>
+        <div class="habit-stats-header">
+          <h3>Habit Stats</h3>
+          <div class="habit-filter-chips">
+            <button class="habit-filter-chip active" data-filter="alt">Alt</button>
+            <button class="habit-filter-chip active" data-filter="neu">Neu</button>
+          </div>
+        </div>
         <div id="yearHabitsList"></div>
       </div>
     </div>
@@ -1379,6 +1415,7 @@
     // schedule.days = array of JS weekdays (0=Sun,1=Mon,...6=Sat), null=every day
     // schedule.months = array of months (0=Jan,...11=Dec), null=every month
     const DEFAULT_HABITS = [
+      // Core — always active
       { icon: '❄️', name: 'Eisbaden / Kryo', schedule: { days: [0], months: [10, 11, 0, 1] } },
       { icon: '🧖‍♂️', name: 'Sauna', schedule: { days: [0], months: null } },
       { icon: '🌅', name: '06:00 - 7:30', schedule: { days: [1,2,3,4,5], months: null } },
@@ -1387,16 +1424,23 @@
       { icon: '🧘', name: 'Stretching', schedule: null },
       { icon: '🦷', name: 'Zähne putzen', schedule: null },
       { icon: '🧴', name: 'Skincare', schedule: null },
-      { icon: '🛌', name: '23:30', schedule: { days: [0,1,2,3,4], months: null } },
       { icon: '🍸', name: 'nüchtern', schedule: null },
       { icon: '🚭', name: 'no smoke', schedule: null },
       { icon: '🔞', name: 'no porn', schedule: null },
-      { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3], months: null } },
-      { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],   months: null } },
-      { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],   months: null } },
-      { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],   months: null } },
-      { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],   months: null } },
-      { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],   months: null } },
+      // Retired 2026-07-31 — kept in state so year view can still show history
+      { icon: '🏃', name: 'Cardio', schedule: { days: [6], months: null }, activeUntil: '2026-07-31' },
+      { icon: '🏋️', name: 'Strength', schedule: { days: [1,4], months: null }, activeUntil: '2026-07-31' },
+      { icon: '🥊', name: 'Spitfire', schedule: { days: [2,3,5], months: null }, activeUntil: '2026-07-31' },
+      { icon: '🛌', name: '00:00', schedule: { days: [0,1,2,3,4], months: null }, activeUntil: '2026-07-31' },
+      { icon: '📱', name: '< 1h social', schedule: { days: [1,2,3,4,5], months: null }, activeUntil: '2026-07-31' },
+      // Activated 2026-08-01
+      { icon: '🛌',  name: '23:30',      schedule: { days: [0,1,2,3,4], months: null }, activeFrom: '2026-08-01' },
+      { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3],       months: null }, activeFrom: '2026-08-01' },
+      { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],         months: null }, activeFrom: '2026-08-01' },
+      { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],         months: null }, activeFrom: '2026-08-01' },
+      { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],         months: null }, activeFrom: '2026-08-01' },
+      { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],         months: null }, activeFrom: '2026-08-01' },
+      { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],         months: null }, activeFrom: '2026-08-01' },
     ];
 
     // --- Supabase config ---
@@ -1417,6 +1461,7 @@
     let currentTab = 'today';
     let overviewMonth = null;
     let overviewYear = null;
+    let yearHabitFilter = { alt: true, neu: true };
 
     function todayStr() {
       const d = new Date();
@@ -1674,33 +1719,43 @@
     // after cloud load. Date-gated so it activates only on/after 1 Aug 2026.
     const AUG_2026_START = new Date('2026-08-01T00:00:00');
 
+    const RETIRED_ON_AUG_2026 = ['Cardio', 'Strength', 'Spitfire', '< 1h social', '00:00'];
+    const V1_GHOSTS = ['Core-Finisher', 'Spagat', 'Protein ≥170g', 'Lange Mobility'];
+
     function applyAugust2026() {
       if (new Date() < AUG_2026_START) return false;
 
       let changed = false;
 
-      const toDelete = [
-        'Cardio', 'Strength', 'Spitfire', '< 1h social',
-        'Core-Finisher', 'Spagat', 'Protein ≥170g', 'Lange Mobility'
-      ];
-      const beforeLen = state.habits.length;
-      state.habits = state.habits.filter(h => !toDelete.includes(h.name));
-      if (state.habits.length !== beforeLen) changed = true;
-
-      const bed = state.habits.find(h => h.name === '00:00' || h.name === '23:00');
-      if (bed) {
-        if (bed.name !== '23:30') { bed.name = '23:30'; changed = true; }
-        bed.schedule = { days: [0,1,2,3,4], months: null };
+      // 1. Retire the old habits — keep their id + history, just close their
+      //    active window so they stop appearing in Today / Month from Aug 1.
+      for (const name of RETIRED_ON_AUG_2026) {
+        const h = state.habits.find(x => x.name === name);
+        if (h && h.activeUntil !== '2026-07-31') {
+          h.activeUntil = '2026-07-31';
+          changed = true;
+        }
       }
 
+      // 2. Defensively remove any v1-only ghost habits that a device might
+      //    still carry from the reverted v1 attempt.
+      const beforeLen = state.habits.length;
+      state.habits = state.habits.filter(h => !V1_GHOSTS.includes(h.name));
+      if (state.habits.length !== beforeLen) changed = true;
+
+      // 3. If a Hybrid ghost survived from v1, migrate it to the new Beat81.
       const hybrid = state.habits.find(h => h.name === 'Hybrid');
       if (hybrid) {
         hybrid.name = 'Beat81';
         hybrid.icon = '🎱';
         hybrid.schedule = { days: [1,3], months: null };
+        hybrid.activeFrom = '2026-08-01';
         changed = true;
       }
 
+      // 4. Add the new habits with an activeFrom date.
+      //    23:30 is added as its own habit (kept separate from the retired 00:00
+      //    so the year-view Alt/Neu toggle can show either historical set).
       const toAdd = [
         { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3], months: null } },
         { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],   months: null } },
@@ -1708,14 +1763,22 @@
         { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],   months: null } },
         { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],   months: null } },
         { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],   months: null } },
+        { icon: '🛌',  name: '23:30',      schedule: { days: [0,1,2,3,4], months: null } },
       ];
       for (const h of toAdd) {
         if (!state.habits.find(e => e.name === h.name)) {
-          state.habits.push({ id: generateId(), icon: h.icon, name: h.name, schedule: h.schedule });
+          state.habits.push({
+            id: generateId(),
+            icon: h.icon,
+            name: h.name,
+            schedule: h.schedule,
+            activeFrom: '2026-08-01',
+          });
           changed = true;
         }
       }
 
+      // 5. Normalize icons (fix any that carried over with wrong icons).
       const iconFix = { 'Beat81': '🎱', 'Kraft A': '💪🏽', 'Kraft B': '💪🏽' };
       for (const h of state.habits) {
         if (iconFix[h.name] && h.icon !== iconFix[h.name]) {
@@ -1902,6 +1965,8 @@
 
     // --- Schedule check ---
     function habitApplies(habit, dateStr) {
+      if (habit.activeFrom && dateStr < habit.activeFrom) return false;
+      if (habit.activeUntil && dateStr > habit.activeUntil) return false;
       if (!habit.schedule) return true;
       const d = parseDate(dateStr);
       const dow = d.getDay();
@@ -2193,6 +2258,7 @@
       for (const habit of state.habits) {
         if (!isHabitVisible(habit)) continue;
         const stats = getMonthPctForHabit(habit.id, year, month);
+        if (stats.total === 0) continue;
         const c = stats.pct > 0 ? pctToColor(stats.pct) : null;
 
         const row = document.createElement('div');
@@ -2368,13 +2434,20 @@
         grid.appendChild(card);
       }
 
-      // Habit stats list
+      // Habit stats list — filtered by Alt/Neu chip toggles and by whether
+      // the habit has any scheduled days in this year at all
       const list = document.getElementById('yearHabitsList');
       list.innerHTML = '';
 
       for (const habit of state.habits) {
         if (!isHabitVisible(habit)) continue;
+        const isRetired = !!habit.activeUntil;
+        const isNew = !!habit.activeFrom;
+        if (isRetired && !yearHabitFilter.alt) continue;
+        if (isNew && !yearHabitFilter.neu) continue;
+
         const stats = getYearPctForHabit(habit.id, year);
+        if (stats.total === 0) continue;
         const c = stats.pct > 0 ? pctToColor(stats.pct) : null;
 
         const row = document.createElement('div');
@@ -2866,6 +2939,16 @@
         overviewYear++;
         renderYear();
       };
+
+      // Year view: Alt/Neu filter chips
+      document.querySelectorAll('.habit-filter-chip').forEach(chip => {
+        chip.onclick = () => {
+          const key = chip.dataset.filter;
+          yearHabitFilter[key] = !yearHabitFilter[key];
+          chip.classList.toggle('active', yearHabitFilter[key]);
+          renderYear();
+        };
+      });
 
       document.onkeydown = (e) => {
         if (e.key === 'Escape') closeEditModal();
