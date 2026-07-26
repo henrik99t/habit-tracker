@@ -1383,18 +1383,20 @@
       { icon: '🧖‍♂️', name: 'Sauna', schedule: { days: [0], months: null } },
       { icon: '🌅', name: '06:00 - 7:30', schedule: { days: [1,2,3,4,5], months: null } },
       { icon: '🧃', name: 'Creatin', schedule: null },
-      { icon: '🏃', name: 'Cardio', schedule: { days: [6], months: null } },
-      { icon: '🏋️', name: 'Strength', schedule: { days: [1,4], months: null } },
       { icon: '🇪🇸', name: '30min Spanisch', schedule: null },
-      { icon: '🥊', name: 'Spitfire', schedule: { days: [2,3,5], months: null } },
       { icon: '🧘', name: 'Stretching', schedule: null },
       { icon: '🦷', name: 'Zähne putzen', schedule: null },
       { icon: '🧴', name: 'Skincare', schedule: null },
-      { icon: '🛌', name: '00:00', schedule: { days: [0,1,2,3,4], months: null } },
-      { icon: '📱', name: '< 1h social', schedule: { days: [1,2,3,4,5], months: null } },
+      { icon: '🛌', name: '23:30', schedule: { days: [0,1,2,3,4], months: null } },
       { icon: '🍸', name: 'nüchtern', schedule: null },
       { icon: '🚭', name: 'no smoke', schedule: null },
       { icon: '🔞', name: 'no porn', schedule: null },
+      { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3], months: null } },
+      { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],   months: null } },
+      { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],   months: null } },
+      { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],   months: null } },
+      { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],   months: null } },
+      { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],   months: null } },
     ];
 
     // --- Supabase config ---
@@ -1536,6 +1538,13 @@
         await pushToCloud();
       }
 
+      // Re-apply idempotent habit-spec migrations on top of the cloud state.
+      // If the cloud predated a migration, this fixes it up and pushes the
+      // corrected state back so the change actually sticks across devices.
+      if (typeof applyAugust2026 === 'function' && applyAugust2026()) {
+        await pushToCloud();
+      }
+
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       localStorage.setItem('cloudSyncedFor', currentUser.id);
     }
@@ -1658,6 +1667,71 @@
         });
         saveState();
       }
+    })();
+
+    // --- August 2026 fitness rework ---
+    // Idempotent (per-name guards) so it's safe to call both at file init and
+    // after cloud load. Date-gated so it activates only on/after 1 Aug 2026.
+    const AUG_2026_START = new Date('2026-08-01T00:00:00');
+
+    function applyAugust2026() {
+      if (new Date() < AUG_2026_START) return false;
+
+      let changed = false;
+
+      const toDelete = [
+        'Cardio', 'Strength', 'Spitfire', '< 1h social',
+        'Core-Finisher', 'Spagat', 'Protein ≥170g', 'Lange Mobility'
+      ];
+      const beforeLen = state.habits.length;
+      state.habits = state.habits.filter(h => !toDelete.includes(h.name));
+      if (state.habits.length !== beforeLen) changed = true;
+
+      const bed = state.habits.find(h => h.name === '00:00' || h.name === '23:00');
+      if (bed) {
+        if (bed.name !== '23:30') { bed.name = '23:30'; changed = true; }
+        bed.schedule = { days: [0,1,2,3,4], months: null };
+      }
+
+      const hybrid = state.habits.find(h => h.name === 'Hybrid');
+      if (hybrid) {
+        hybrid.name = 'Beat81';
+        hybrid.icon = '🎱';
+        hybrid.schedule = { days: [1,3], months: null };
+        changed = true;
+      }
+
+      const toAdd = [
+        { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3], months: null } },
+        { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],   months: null } },
+        { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],   months: null } },
+        { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],   months: null } },
+        { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],   months: null } },
+        { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],   months: null } },
+      ];
+      for (const h of toAdd) {
+        if (!state.habits.find(e => e.name === h.name)) {
+          state.habits.push({ id: generateId(), icon: h.icon, name: h.name, schedule: h.schedule });
+          changed = true;
+        }
+      }
+
+      const iconFix = { 'Beat81': '🎱', 'Kraft A': '💪🏽', 'Kraft B': '💪🏽' };
+      for (const h of state.habits) {
+        if (iconFix[h.name] && h.icon !== iconFix[h.name]) {
+          h.icon = iconFix[h.name];
+          changed = true;
+        }
+      }
+
+      return changed;
+    }
+
+    (function migrateAugust2026() {
+      if (localStorage.getItem('august_2026_applied')) return;
+      if (new Date() < AUG_2026_START) return; // don't set the flag pre-Aug 1
+      if (applyAugust2026()) saveState();
+      localStorage.setItem('august_2026_applied', '1');
     })();
 
     // --- One-time import: Jan/Feb/Mar 2026 data from Google Sheets CSV ---
