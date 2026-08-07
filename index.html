@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="Habits">
   <meta name="theme-color" content="#f5f5f7">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="/icon-192.svg" type="image/svg+xml">
+  <link rel="icon" href="icon-192.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" id="appleTouchIcon">
   <title>Habit Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3013,7 +3013,7 @@
 
     // Register service worker for PWA / offline
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   </script>
 </body>
