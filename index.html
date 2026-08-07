@@ -1426,12 +1426,9 @@
       { icon: '🧃', name: 'Creatin', schedule: null },
       { icon: '🇪🇸', name: '30min Spanisch', schedule: null },
       // Training — new (Mon → Sat)
-      { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3],       months: null }, activeFrom: '2026-08-01' },
-      { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],         months: null }, activeFrom: '2026-08-01' },
-      { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],         months: null }, activeFrom: '2026-08-01' },
-      { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],         months: null }, activeFrom: '2026-08-01' },
-      { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],         months: null }, activeFrom: '2026-08-01' },
-      { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],         months: null }, activeFrom: '2026-08-01' },
+      { icon: '🎱',  name: 'Beat81',  schedule: { days: [1,3],   months: null }, activeFrom: '2026-08-01' },
+      { icon: '💪🏽', name: 'Kraft',   schedule: { days: [2,4,5], months: null }, activeFrom: '2026-08-01' },
+      { icon: '🏃',  name: 'Runclub', schedule: { days: [6],     months: null }, activeFrom: '2026-08-01' },
       // Training — retired
       { icon: '🏃', name: 'Cardio', schedule: { days: [6], months: null }, activeUntil: '2026-07-31' },
       { icon: '🏋️', name: 'Strength', schedule: { days: [1,4], months: null }, activeUntil: '2026-07-31' },
@@ -1453,7 +1450,7 @@
     const HABIT_ORDER = [
       '06:00 - 7:30', 'Eisbaden / Kryo', 'Sauna', 'Zähne putzen', 'Skincare',
       'Creatin', '30min Spanisch',
-      'Beat81', 'Kickboxing', 'Kraft A', 'Sparring', 'Runclub', 'Kraft B',
+      'Beat81', 'Kraft', 'Runclub',
       'Cardio', 'Strength', 'Spitfire',
       'Stretching',
       '< 1h social', 'nüchtern', 'no smoke', 'no porn',
@@ -1730,7 +1727,12 @@
     const AUG_2026_START = new Date('2026-08-01T00:00:00');
 
     const RETIRED_ON_AUG_2026 = ['Cardio', 'Strength', 'Spitfire', '< 1h social', '00:00'];
-    const V1_GHOSTS = ['Core-Finisher', 'Spagat', 'Protein ≥170g', 'Lange Mobility'];
+    // Ghost habits from earlier undeployed specs (v1/v2) — hard-removed so
+    // they don't linger if any device somehow ran a prior version.
+    const PRIOR_SPEC_GHOSTS = [
+      'Core-Finisher', 'Spagat', 'Protein ≥170g', 'Lange Mobility', // v1
+      'Kickboxing', 'Sparring', 'Kraft A', 'Kraft B',               // v2
+    ];
 
     function applyAugust2026() {
       if (new Date() < AUG_2026_START) return false;
@@ -1747,10 +1749,9 @@
         }
       }
 
-      // 2. Defensively remove any v1-only ghost habits that a device might
-      //    still carry from the reverted v1 attempt.
+      // 2. Defensively remove any ghost habits from earlier undeployed specs.
       const beforeLen = state.habits.length;
-      state.habits = state.habits.filter(h => !V1_GHOSTS.includes(h.name));
+      state.habits = state.habits.filter(h => !PRIOR_SPEC_GHOSTS.includes(h.name));
       if (state.habits.length !== beforeLen) changed = true;
 
       // 3. If a Hybrid ghost survived from v1, migrate it to the new Beat81.
@@ -1763,17 +1764,15 @@
         changed = true;
       }
 
-      // 4. Add the new habits with an activeFrom date.
-      //    23:30 is added as its own habit (kept separate from the retired 00:00
-      //    so the year-view Alt/Neu toggle can show either historical set).
+      // 4. Add the new habits with an activeFrom date. Kraft is one habit
+      //    scheduled Tue/Thu/Fri (A/B/C rotation lives in the plan, not the
+      //    tracker). 23:30 is added separately from the retired 00:00 so the
+      //    year-view Alt/Neu toggle can show either historical set.
       const toAdd = [
-        { icon: '🎱',  name: 'Beat81',     schedule: { days: [1,3], months: null } },
-        { icon: '🥊',  name: 'Kickboxing', schedule: { days: [2],   months: null } },
-        { icon: '💪🏽', name: 'Kraft A',    schedule: { days: [4],   months: null } },
-        { icon: '🥊',  name: 'Sparring',   schedule: { days: [5],   months: null } },
-        { icon: '🏃',  name: 'Runclub',    schedule: { days: [6],   months: null } },
-        { icon: '💪🏽', name: 'Kraft B',    schedule: { days: [6],   months: null } },
-        { icon: '🛌',  name: '23:30',      schedule: { days: [0,1,2,3,4], months: null } },
+        { icon: '🎱',  name: 'Beat81',  schedule: { days: [1,3],   months: null } },
+        { icon: '💪🏽', name: 'Kraft',   schedule: { days: [2,4,5], months: null } },
+        { icon: '🏃',  name: 'Runclub', schedule: { days: [6],     months: null } },
+        { icon: '🛌',  name: '23:30',   schedule: { days: [0,1,2,3,4], months: null } },
       ];
       for (const h of toAdd) {
         if (!state.habits.find(e => e.name === h.name)) {
@@ -1789,7 +1788,7 @@
       }
 
       // 5. Normalize icons (fix any that carried over with wrong icons).
-      const iconFix = { 'Beat81': '🎱', 'Kraft A': '💪🏽', 'Kraft B': '💪🏽' };
+      const iconFix = { 'Beat81': '🎱', 'Kraft': '💪🏽' };
       for (const h of state.habits) {
         if (iconFix[h.name] && h.icon !== iconFix[h.name]) {
           h.icon = iconFix[h.name];
@@ -1800,11 +1799,13 @@
       return changed;
     }
 
-    (function migrateAugust2026() {
-      if (localStorage.getItem('august_2026_applied')) return;
+    // Flag name intentionally differs from any prior spec's flag, so this
+    // migration runs even on a device that partially applied v1/v2.
+    (function migrateAugust2026Rework() {
+      if (localStorage.getItem('august_2026_rework_applied')) return;
       if (new Date() < AUG_2026_START) return; // don't set the flag pre-Aug 1
       if (applyAugust2026()) saveState();
-      localStorage.setItem('august_2026_applied', '1');
+      localStorage.setItem('august_2026_rework_applied', '1');
     })();
 
     (function migrateHabitOrder() {
