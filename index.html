@@ -1232,6 +1232,259 @@
     .auth-message.error { color: var(--danger); }
     .auth-message.success { color: var(--success); }
     .container.hidden { visibility: hidden; }
+
+    /* --- Workout log ------------------------------------------------------ */
+    .habit-card--workout .habit-icon,
+    .habit-card--workout .habit-info { cursor: pointer; }
+
+    .habit-workout-chev {
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-left: 4px;
+      opacity: 0.65;
+    }
+    .habit-card--workout:hover .habit-workout-chev { opacity: 1; }
+
+    .workout-badge {
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-light);
+      border-radius: var(--radius-sm);
+      padding: 1px 6px;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    .workout-badge.empty {
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px dashed var(--border);
+    }
+
+    .modal-workout {
+      max-width: 460px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .workout-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .workout-head h3 { margin-bottom: 2px; font-size: 17px; }
+    .workout-sub { font-size: 12px; color: var(--text-secondary); }
+
+    .workout-volume {
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .workout-volume strong {
+      display: block;
+      font-size: 16px;
+      color: var(--accent);
+    }
+    .workout-volume span { display: block; }
+
+    .workout-body {
+      flex: 1;
+      overflow-y: auto;
+      margin: 0 -20px;
+      padding: 4px 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .workout-empty {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .workout-ex {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .workout-ex:last-child { border-bottom: none; }
+
+    .workout-ex-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .workout-ex-name {
+      flex: 1;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .workout-chev {
+      display: inline-block;
+      color: var(--text-secondary);
+      transition: transform 0.15s ease;
+      margin-left: 2px;
+    }
+    .workout-chev.open { transform: rotate(90deg); }
+
+    .workout-trend { font-size: 13px; font-weight: 600; }
+    .workout-trend.up { color: var(--success); }
+    .workout-trend.down { color: var(--danger); }
+    .workout-trend.same { color: var(--text-secondary); }
+
+    .workout-ex-del,
+    .workout-set-del {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .workout-ex-del:hover,
+    .workout-set-del:hover { color: var(--danger); background: var(--accent-light); }
+
+    .workout-ex-target {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .workout-ex-last {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 2px 0 8px;
+    }
+
+    .workout-ex-prog {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--success);
+      margin: -4px 0 8px;
+    }
+
+    .workout-hist {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+    .workout-hist-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 11px;
+      padding: 3px 0;
+    }
+    .workout-hist-row.muted { color: var(--text-secondary); }
+    .workout-hist-date { color: var(--text-secondary); min-width: 44px; }
+    .workout-hist-sets { flex: 1; }
+    .workout-hist-vol { color: var(--text-secondary); white-space: nowrap; }
+
+    .workout-tpl-del {
+      margin-top: 6px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--danger);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .workout-set {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .workout-set-n {
+      width: 18px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .workout-input {
+      width: 62px;
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      text-align: center;
+    }
+    .workout-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .workout-unit,
+    .workout-times {
+      font-size: 11px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .workout-times { margin: 0 2px; }
+
+    .workout-add-set {
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      padding: 5px 10px;
+      margin-top: 2px;
+    }
+    .workout-add-set:hover { color: var(--accent); border-color: var(--accent); }
+
+    .workout-foot {
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .workout-foot .add-btn { margin-bottom: 10px; }
+
+    .workout-add-form {
+      display: none;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .workout-add-form.visible { display: flex; }
+    .workout-add-form .form-input { flex: 1; }
+
+    .workout-done { width: 100%; }
+
+    @media (max-width: 480px) {
+      .modal-workout { max-height: 92vh; padding: 16px; }
+      .workout-body { margin: 0 -16px; padding: 4px 16px; }
+      .workout-input { width: 100%; min-width: 0; }
+      .workout-set { gap: 4px; }
+      .workout-badge { margin-left: 6px; }
+    }
   </style>
 </head>
 <body>
@@ -1409,6 +1662,30 @@
     </div>
   </div>
 
+  <!-- Workout modal -->
+  <div class="modal-overlay" id="workoutModal">
+    <div class="modal modal-workout">
+      <div class="workout-head">
+        <div class="workout-head-text">
+          <h3 id="workoutTitle"></h3>
+          <div class="workout-sub" id="workoutSub"></div>
+        </div>
+        <div class="workout-volume" id="workoutVolume"></div>
+      </div>
+      <div class="workout-body" id="workoutBody"></div>
+      <div class="workout-foot">
+        <button class="add-btn" id="showWorkoutAdd">+ Übung</button>
+        <div class="workout-add-form" id="workoutAddForm">
+          <input type="text" id="workoutExInput" class="form-input"
+                 placeholder="z.B. Back Squat" maxlength="50">
+          <button class="btn btn-primary" id="workoutExSave">Add</button>
+          <button class="btn btn-secondary" id="workoutExCancel">&times;</button>
+        </div>
+        <button class="btn btn-primary workout-done" id="closeWorkout">Fertig</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // --- Default habits ---
     // schedule.days = array of JS weekdays (0=Sun,1=Mon,...6=Sat), null=every day
@@ -1425,11 +1702,17 @@
       { icon: '🧴', name: 'Skincare', schedule: null },
       { icon: '🧃', name: 'Creatin', schedule: null },
       { icon: '🇪🇸', name: '30min Spanisch', schedule: null },
-      // Training — new (Mon → Sat)
-      { icon: '🎱',  name: 'Beat81',  schedule: { days: [1,3],   months: null }, activeFrom: '2026-08-01' },
-      { icon: '💪🏽', name: 'Kraft',   schedule: { days: [2,4,5], months: null }, activeFrom: '2026-08-01' },
-      { icon: '🏃',  name: 'Runclub', schedule: { days: [6],     months: null }, activeFrom: '2026-08-01' },
-      // Training — retired
+      // Training — active (Mon → Sat), structure from 7 Sep 2026
+      { icon: '⚡',  name: 'HYBRID: Foundation', schedule: { days: [1],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '💪🏽', name: 'Strength A',         schedule: { days: [2],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🔥',  name: 'BUILD+',             schedule: { days: [3],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '😴',  name: 'Rest Day',           schedule: { days: [4],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🏋️', name: 'Strength B',         schedule: { days: [5],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🏃',  name: 'Runclub',            schedule: { days: [6],   months: null }, activeFrom: '2026-08-01' },
+      // Training — retired (Aug 2026 set)
+      { icon: '🎱',  name: 'Beat81', schedule: { days: [1,3],   months: null }, activeFrom: '2026-08-01', activeUntil: '2026-09-06' },
+      { icon: '💪🏽', name: 'Kraft',  schedule: { days: [2,4,5], months: null }, activeFrom: '2026-08-01', activeUntil: '2026-09-06' },
+      // Training — retired (pre-Aug 2026 set)
       { icon: '🏃', name: 'Cardio', schedule: { days: [6], months: null }, activeUntil: '2026-07-31' },
       { icon: '🏋️', name: 'Strength', schedule: { days: [1,4], months: null }, activeUntil: '2026-07-31' },
       { icon: '🥊', name: 'Spitfire', schedule: { days: [2,3,5], months: null }, activeUntil: '2026-07-31' },
@@ -1450,8 +1733,8 @@
     const HABIT_ORDER = [
       '06:00 - 7:30', 'Eisbaden / Kryo', 'Sauna', 'Zähne putzen', 'Skincare',
       'Creatin', '30min Spanisch',
-      'Beat81', 'Kraft', 'Runclub',
-      'Cardio', 'Strength', 'Spitfire',
+      'HYBRID: Foundation', 'Strength A', 'BUILD+', 'Rest Day', 'Strength B', 'Runclub',
+      'Beat81', 'Kraft', 'Cardio', 'Strength', 'Spitfire',
       'Stretching',
       '< 1h social', 'nüchtern', 'no smoke', 'no porn',
       '23:30', '00:00',
@@ -1470,6 +1753,52 @@
       state.habits = sorted;
       return true;
     }
+
+    // --- Workout logging ---
+    // Only the two barbell sessions get an exercise log (weight x reps per set).
+    // HYBRID (class format), BUILD+ (trainer-led), Runclub, Rest Day and
+    // Stretching stay plain checkboxes.
+    const WORKOUT_HABITS = ['Strength A', 'Strength B'];
+
+    // The plan itself, straight from the coaching spec. This is reference data,
+    // not state: state.workoutTemplates only stores { id, name }, and the
+    // targets below are looked up by name at render time. Editing this constant
+    // therefore updates every target instantly, with no migration, and an
+    // exercise added in the app still works — it just shows no target line.
+    //   rest  — rest category (spec §1)
+    //   step  — progression increment (spec §18); omit where it makes no sense
+    //   perHand — dumbbell work, so the increment is per hand
+    const WORKOUT_TEMPLATES = {
+      // Tuesday — lower-body strength + balanced upper-body hypertrophy
+      'Strength A': [
+        { name: 'Back Squat',                  sets: '3', reps: '8–10',  start: '60–70 kg',            rest: 'compound',   step: 2.5 },
+        { name: 'Incline Chest Press Machine', sets: '3', reps: '8–10',  start: 'Startgewicht finden', rest: 'compound',   step: 2.5 },
+        { name: 'Chest-Supported Row',         sets: '3', reps: '8–10',  start: 'Startgewicht finden', rest: 'assistance', step: 2.5 },
+        { name: 'Dumbbell Lateral Raise',      sets: '3', reps: '12–15', start: '6–10 kg/Hand',        rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Dumbbell Biceps Curl',        sets: '3', reps: '10–12', start: '10–14 kg/Hand',       rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Cable Triceps Pushdown',      sets: '3', reps: '10–12', start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Cable Crunch',                sets: '3', reps: '10–15', start: 'nach Gefühl',         rest: 'core' },
+      ],
+      // Friday — upper-body hypertrophy + lower-body accessory. Adaptive: volume
+      // can be cut back depending on what Wednesday's BUILD+ already took out.
+      'Strength B': [
+        { name: 'Flat Barbell Bench Press',    sets: '3',   reps: '8–10',  start: '55–65 kg',            rest: 'compound',   step: 2.5 },
+        { name: 'Leg Press',                   sets: '3',   reps: '10–12', start: 'Startgewicht finden', rest: 'compound',   step: 2.5 },
+        { name: 'Wide-Grip Lat Pulldown',      sets: '3',   reps: '10–12', start: '50–60 kg',            rest: 'assistance', step: 2.5 },
+        { name: 'Dumbbell Lunges',             sets: '2–3', reps: '10–12', start: '12–20 kg/Hand',       rest: 'assistance', step: 1, perHand: true },
+        { name: 'Dumbbell Lateral Raise',      sets: '3',   reps: '12–15', start: '6–10 kg/Hand',        rest: 'isolation',  step: 1, perHand: true },
+        { name: 'EZ-Bar Curl',                 sets: '3',   reps: '10',    start: '20–30 kg',            rest: 'isolation',  step: 2.5 },
+        { name: 'Dumbbell Reverse Fly',        sets: '3',   reps: '15',    start: '6–8 kg/Hand',         rest: 'isolation',  step: 1, perHand: true },
+      ],
+    };
+
+    const REST_LABEL = {
+      compound:   '~3 min Pause',
+      assistance: '~2 min Pause',
+      isolation:  '60–90 s Pause',
+      core:       '60–90 s Pause',
+    };
+    const RIR_LABEL = 'RIR 1–2';
 
     // --- Supabase config ---
     const SUPABASE_URL = 'https://kplefxmvamdxjhnpbdhk.supabase.co';
@@ -1519,18 +1848,32 @@
           const s = JSON.parse(raw);
           if (!s.comments) s.comments = {};
           if (!s.dayTags) s.dayTags = {};
+          if (!s.workoutTemplates) s.workoutTemplates = {};
+          if (!s.workoutLogs) s.workoutLogs = {};
           if (s.hidePorn === undefined) s.hidePorn = false;
           return s;
         }
       } catch (e) {}
       // First load: seed with default habits
-      const habits = DEFAULT_HABITS.map((h, i) => ({
-        id: 'h' + i + '_' + Date.now().toString(36),
-        icon: h.icon,
-        name: h.name,
-        schedule: h.schedule || null,
-      }));
-      return { habits, completions: {}, comments: {}, dayTags: {}, theme: 'light', hidePorn: false };
+      // activeFrom / activeUntil have to survive the seed, otherwise a fresh
+      // install shows every retired habit on every day and the dated reworks
+      // can't tell a seeded habit from one they still need to add.
+      const habits = DEFAULT_HABITS.map((h, i) => {
+        const habit = {
+          id: 'h' + i + '_' + Date.now().toString(36),
+          icon: h.icon,
+          name: h.name,
+          schedule: h.schedule || null,
+        };
+        if (h.activeFrom) habit.activeFrom = h.activeFrom;
+        if (h.activeUntil) habit.activeUntil = h.activeUntil;
+        return habit;
+      });
+      return {
+        habits, completions: {}, comments: {}, dayTags: {},
+        workoutTemplates: {}, workoutLogs: {},
+        theme: 'light', hidePorn: false,
+      };
     }
 
     function saveState() {
@@ -1562,6 +1905,8 @@
       if (!s.completions) s.completions = {};
       if (!s.comments) s.comments = {};
       if (!s.dayTags) s.dayTags = {};
+      if (!s.workoutTemplates) s.workoutTemplates = {};
+      if (!s.workoutLogs) s.workoutLogs = {};
       if (s.hidePorn === undefined) s.hidePorn = false;
       if (!s.theme) s.theme = 'light';
       return s;
@@ -1617,6 +1962,8 @@
       // corrected state back so the change actually sticks across devices.
       let needsPush = false;
       if (typeof applyAugust2026 === 'function' && applyAugust2026()) needsPush = true;
+      if (typeof applySeptember2026 === 'function' && applySeptember2026()) needsPush = true;
+      if (typeof seedWorkoutTemplates === 'function' && seedWorkoutTemplates()) needsPush = true;
       if (typeof applyHabitOrder === 'function' && applyHabitOrder()) needsPush = true;
       if (needsPush) await pushToCloud();
 
@@ -1741,11 +2088,15 @@
 
       // 1. Retire the old habits — keep their id + history, just close their
       //    active window so they stop appearing in Today / Month from Aug 1.
+      // Match only the pre-Aug habits: they carry no activeFrom, while every
+      // habit added by a later rework always does. find() would also stop at
+      // the first match, leaving a second habit of the same name active.
       for (const name of RETIRED_ON_AUG_2026) {
-        const h = state.habits.find(x => x.name === name);
-        if (h && h.activeUntil !== '2026-07-31') {
-          h.activeUntil = '2026-07-31';
-          changed = true;
+        for (const h of state.habits.filter(x => x.name === name && !x.activeFrom)) {
+          if (h.activeUntil !== '2026-07-31') {
+            h.activeUntil = '2026-07-31';
+            changed = true;
+          }
         }
       }
 
@@ -1799,6 +2150,66 @@
       return changed;
     }
 
+    // --- September 2026 training rework ---
+    // Beat81 (Mon/Wed) + Kraft (Tue/Thu/Fri) give way to a Mon HYBRID session,
+    // two flexible Strength days (Tue/Fri), trainer-led BUILD+ on Wed and a
+    // real rest day on Thu. Runclub, Sauna, Stretching and everything outside
+    // training are untouched. Same idempotent, date-gated shape as August.
+    const SEP_2026_START = new Date('2026-09-07T00:00:00');
+    const RETIRED_ON_SEP_2026 = ['Beat81', 'Kraft'];
+
+    const SEP_2026_HABITS = [
+      { icon: '⚡',  name: 'HYBRID: Foundation', schedule: { days: [1],   months: null } },
+      { icon: '💪🏽', name: 'Strength A',         schedule: { days: [2],   months: null } },
+      { icon: '🔥',  name: 'BUILD+',             schedule: { days: [3],   months: null } },
+      { icon: '😴',  name: 'Rest Day',           schedule: { days: [4],   months: null } },
+      { icon: '🏋️', name: 'Strength B',         schedule: { days: [5],   months: null } },
+    ];
+
+    function applySeptember2026() {
+      if (new Date() < SEP_2026_START) return false;
+
+      let changed = false;
+
+      // 1. Close the August habits' window — id + history stay intact, they
+      //    just stop appearing in Today / Month from Sep 7.
+      for (const name of RETIRED_ON_SEP_2026) {
+        for (const h of state.habits.filter(x => x.name === name)) {
+          if (h.activeUntil !== '2026-09-06') {
+            h.activeUntil = '2026-09-06';
+            changed = true;
+          }
+        }
+      }
+
+      // 2. Add the new habits. Strength A (Tue) and Strength B (Fri) are
+      //    separate habits because the plan gives them different exercises.
+      for (const h of SEP_2026_HABITS) {
+        if (!state.habits.some(e => e.name === h.name)) {
+          state.habits.push({
+            id: generateId(),
+            icon: h.icon,
+            name: h.name,
+            schedule: h.schedule,
+            activeFrom: '2026-09-07',
+          });
+          changed = true;
+        }
+      }
+
+      // 3. Normalize icons on the new set only.
+      for (const h of state.habits) {
+        if (h.activeFrom !== '2026-09-07') continue;
+        const spec = SEP_2026_HABITS.find(s => s.name === h.name);
+        if (spec && h.icon !== spec.icon) {
+          h.icon = spec.icon;
+          changed = true;
+        }
+      }
+
+      return changed;
+    }
+
     // Flag name intentionally differs from any prior spec's flag, so this
     // migration runs even on a device that partially applied v1/v2.
     (function migrateAugust2026Rework() {
@@ -1806,6 +2217,36 @@
       if (new Date() < AUG_2026_START) return; // don't set the flag pre-Aug 1
       if (applyAugust2026()) saveState();
       localStorage.setItem('august_2026_rework_applied', '1');
+    })();
+
+    (function migrateSeptember2026Rework() {
+      if (localStorage.getItem('september_2026_rework_applied')) return;
+      if (new Date() < SEP_2026_START) return; // don't set the flag pre-Sep 7
+      if (applySeptember2026()) saveState();
+      localStorage.setItem('september_2026_rework_applied', '1');
+    })();
+
+    // Create the per-session exercise templates once. Only fills a session
+    // type that has no template yet, so a list edited in the app is never
+    // overwritten by a later reload.
+    function seedWorkoutTemplates() {
+      let changed = false;
+      if (!state.workoutTemplates) { state.workoutTemplates = {}; changed = true; }
+      if (!state.workoutLogs) { state.workoutLogs = {}; changed = true; }
+      for (const name of WORKOUT_HABITS) {
+        if (Array.isArray(state.workoutTemplates[name])) continue;
+        // Only id + name go into state; the targets stay in WORKOUT_TEMPLATES.
+        state.workoutTemplates[name] = (WORKOUT_TEMPLATES[name] || []).map(ex => ({
+          id: 'ex_' + generateId(),
+          name: ex.name,
+        }));
+        changed = true;
+      }
+      return changed;
+    }
+
+    (function migrateWorkoutTemplates() {
+      if (seedWorkoutTemplates()) saveState();
     })();
 
     (function migrateHabitOrder() {
@@ -2149,20 +2590,30 @@
         const streak = getStreak(habit.id);
         const last7 = getWeekDays(habit.id);
         const monthPct = getMonthlyPctForHabit(habit.id, selectedDate);
+        const workout = isWorkoutHabit(habit);
+        const wsum = workout ? workoutSummaryFor(selectedDate, habit.id) : null;
 
         const card = document.createElement('div');
-        card.className = 'habit-card';
+        card.className = 'habit-card' + (workout ? ' habit-card--workout' : '');
         card.innerHTML = `
           <button class="habit-check ${done ? 'checked' : ''}" data-id="${habit.id}">
             ${done ? '&#10003;' : ''}
           </button>
-          <span class="habit-icon">${habit.icon}</span>
-          <div class="habit-info">
-            <div class="habit-name">${escapeHtml(habit.name)}</div>
+          <span class="habit-icon"${workout ? ` data-workout="${habit.id}"` : ''}>${habit.icon}</span>
+          <div class="habit-info"${workout ? ` data-workout="${habit.id}"` : ''}>
+            <div class="habit-name">
+              ${escapeHtml(habit.name)}
+              ${workout ? '<span class="habit-workout-chev">&#8250;</span>' : ''}
+            </div>
             <div class="habit-meta">
               <span class="streak-dots">
                 ${last7.map(d => `<span class="streak-dot ${d ? 'done' : ''}"></span>`).join('')}
               </span>
+              ${workout ? `<span class="workout-badge${wsum.sets ? '' : ' empty'}">${
+                wsum.sets
+                  ? `${wsum.filled} Üb · ${wsum.sets} Sätze${wsum.volume > 0 ? ` · ${formatVolume(wsum.volume)} kg` : ''}`
+                  : 'Übungen eintragen'
+              }</span>` : ''}
             </div>
           </div>
           <span class="habit-month-pct">${monthPct.pct}%</span>
@@ -2183,6 +2634,9 @@
       });
       list.querySelectorAll('[data-delete]').forEach(btn => {
         btn.onclick = () => deleteHabit(btn.dataset.delete);
+      });
+      list.querySelectorAll('[data-workout]').forEach(el => {
+        el.onclick = () => openWorkoutModal(el.dataset.workout);
       });
     }
 
@@ -2456,8 +2910,10 @@
 
       for (const habit of state.habits) {
         if (!isHabitVisible(habit)) continue;
+        // Beat81/Kraft carry both dates (added in Aug, retired in Sep) —
+        // retired wins so they show up under "Alt", not under both chips.
         const isRetired = !!habit.activeUntil;
-        const isNew = !!habit.activeFrom;
+        const isNew = !isRetired && !!habit.activeFrom;
         if (isRetired && !yearHabitFilter.alt) continue;
         if (isNew && !yearHabitFilter.neu) continue;
 
@@ -2591,8 +3047,457 @@
       for (const key of Object.keys(state.completions)) {
         if (key.endsWith('_' + id)) delete state.completions[key];
       }
+      for (const key of Object.keys(state.workoutLogs || {})) {
+        if (key.endsWith('_' + id)) delete state.workoutLogs[key];
+      }
       saveState();
       render();
+    }
+
+    // --- Workout log -----------------------------------------------------
+    // Sets live in state.workoutLogs, keyed exactly like completions
+    // (`${date}_${habitId}`). Each logged exercise snapshots its own name so
+    // renaming a template entry later never rewrites past sessions.
+    // exerciseId stays the link used for the "last time" comparison.
+
+    let workoutSession = null; // { key, dateStr, habit, exercises, openHistory }
+
+    function isWorkoutHabit(habit) {
+      return !!habit && WORKOUT_HABITS.includes(habit.name);
+    }
+
+    function workoutTemplate(habitName) {
+      if (!Array.isArray(state.workoutTemplates[habitName])) {
+        state.workoutTemplates[habitName] = [];
+      }
+      return state.workoutTemplates[habitName];
+    }
+
+    function cleanSets(sets) {
+      if (!Array.isArray(sets)) return [];
+      return sets.filter(s => s && (Number(s.weight) > 0 || Number(s.reps) > 0));
+    }
+
+    function setVolume(s) {
+      return (Number(s.weight) || 0) * (Number(s.reps) || 0);
+    }
+
+    // Ranking is weight first, reps as the tiebreaker — not volume. Following
+    // the plan's "+2.5 kg once you hit the top of the range" rule means fewer
+    // reps at a heavier weight, which is progress even though the volume drops.
+    // Bodyweight sets carry no weight, so they fall through to the rep count.
+    function compareSets(a, b) {
+      const wa = Number(a.weight) || 0, wb = Number(b.weight) || 0;
+      if (wa !== wb) return wa - wb;
+      return (Number(a.reps) || 0) - (Number(b.reps) || 0);
+    }
+
+    function bestSet(sets) {
+      const list = cleanSets(sets);
+      if (!list.length) return null;
+      return list.reduce((a, b) => (compareSets(b, a) > 0 ? b : a));
+    }
+
+    // Totals for a session — used by both the card badge and the modal header.
+    function workoutSummary(exercises) {
+      let sets = 0, volume = 0, filled = 0;
+      for (const ex of exercises || []) {
+        const list = cleanSets(ex.sets);
+        if (list.length) filled++;
+        sets += list.length;
+        for (const s of list) volume += setVolume(s);
+      }
+      return { exercises: (exercises || []).length, filled, sets, volume };
+    }
+
+    function workoutSummaryFor(dateStr, habitId) {
+      const log = (state.workoutLogs || {})[`${dateStr}_${habitId}`];
+      return workoutSummary(log ? log.exercises : []);
+    }
+
+    // Every earlier session that logged this exercise, newest first.
+    function exerciseSessions(exerciseId, beforeDate) {
+      const out = [];
+      for (const key of Object.keys(state.workoutLogs || {})) {
+        const ds = key.slice(0, 10);
+        if (beforeDate && ds >= beforeDate) continue;
+        const log = state.workoutLogs[key];
+        if (!log || !Array.isArray(log.exercises)) continue;
+        const ex = log.exercises.find(e => e.exerciseId === exerciseId);
+        if (!ex) continue;
+        const sets = cleanSets(ex.sets);
+        if (!sets.length) continue;
+        out.push({ date: ds, sets });
+      }
+      out.sort((a, b) => b.date.localeCompare(a.date));
+      return out;
+    }
+
+    // --- Plan targets & progression ---------------------------------------
+    // Targets come from WORKOUT_TEMPLATES by name, so a self-added exercise
+    // simply has none.
+    function exerciseTarget(habitName, exerciseName) {
+      return (WORKOUT_TEMPLATES[habitName] || [])
+        .find(e => e.name === exerciseName) || null;
+    }
+
+    // '8–10' -> 10, '10' -> 10 (the spec uses en dashes).
+    function rangeTop(str) {
+      const parts = String(str || '').split(/[–-]/).map(p => parseInt(p, 10));
+      const nums = parts.filter(n => !Number.isNaN(n));
+      return nums.length ? Math.max(...nums) : null;
+    }
+
+    // '2–3' -> 2, '3' -> 3: the number of sets that has to be there.
+    function rangeBottom(str) {
+      const parts = String(str || '').split(/[–-]/).map(p => parseInt(p, 10));
+      const nums = parts.filter(n => !Number.isNaN(n));
+      return nums.length ? Math.min(...nums) : null;
+    }
+
+    // Spec §18: hit the top of the rep range on every working set with clean
+    // form, then add ~2.5 kg (compound) or ~1–2 kg per hand (isolation) next
+    // time. Form is something only Henrik can judge — the app suggests, the
+    // decision happens while entering the sets.
+    function progressionSuggestion(habitName, exercise, beforeDate) {
+      const target = exerciseTarget(habitName, exercise.name);
+      if (!target || !target.step) return null;
+
+      const last = exerciseSessions(exercise.exerciseId, beforeDate)[0];
+      if (!last) return null;
+
+      const topReps = rangeTop(target.reps);
+      const minSets = rangeBottom(target.sets);
+      if (!topReps || !minSets) return null;
+
+      const sets = last.sets;
+      if (sets.length < minSets) return null;
+      if (!sets.every(s => (Number(s.reps) || 0) >= topReps)) return null;
+
+      const weights = sets.map(s => Number(s.weight) || 0);
+      const base = Math.min(...weights);
+      if (base <= 0) return null;
+
+      return { weight: base + target.step, step: target.step, perHand: !!target.perHand };
+    }
+
+    function describeTarget(target) {
+      const bits = [`Ziel ${target.sets} × ${target.reps}`, RIR_LABEL];
+      if (REST_LABEL[target.rest]) bits.push(REST_LABEL[target.rest]);
+      return bits.join(' · ');
+    }
+
+    function formatShortDate(ds) {
+      return `${ds.slice(8,10)}.${ds.slice(5,7)}.`;
+    }
+
+    function formatKg(n) {
+      const v = Number(n) || 0;
+      return Number.isInteger(v) ? String(v) : v.toFixed(1).replace('.', ',');
+    }
+
+    function formatVolume(n) {
+      return Math.round(Number(n) || 0).toLocaleString('de-DE');
+    }
+
+    function describeSet(s) {
+      const w = Number(s.weight) || 0;
+      const r = Number(s.reps) || 0;
+      return w > 0 ? `${formatKg(w)} kg × ${r}` : `${r} Wdh`;
+    }
+
+    // --- Modal ---
+    function openWorkoutModal(habitId) {
+      const habit = state.habits.find(h => h.id === habitId);
+      if (!habit) return;
+      const key = `${selectedDate}_${habitId}`;
+      const stored = (state.workoutLogs || {})[key];
+
+      // Not persisted on open — a session only hits state once something is
+      // actually entered, so merely peeking at a day leaves no empty log.
+      const exercises = stored && Array.isArray(stored.exercises)
+        ? stored.exercises.map(ex => ({
+            exerciseId: ex.exerciseId,
+            name: ex.name,
+            sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps })),
+          }))
+        : workoutTemplate(habit.name).map(ex => ({
+            exerciseId: ex.id,
+            name: ex.name,
+            sets: [],
+          }));
+
+      workoutSession = { key, dateStr: selectedDate, habit, exercises, openHistory: null };
+
+      document.getElementById('workoutTitle').innerHTML =
+        `${habit.icon} ${escapeHtml(habit.name)}`;
+      document.getElementById('workoutSub').textContent = formatDate(selectedDate);
+      document.getElementById('workoutAddForm').classList.remove('visible');
+      document.getElementById('showWorkoutAdd').style.display = '';
+      document.getElementById('workoutExInput').value = '';
+      renderWorkoutBody();
+      document.getElementById('workoutModal').classList.add('visible');
+    }
+
+    function closeWorkoutModal() {
+      if (workoutSession) {
+        // Drop a session that ended up with nothing in it, so state stays lean.
+        const s = workoutSummary(workoutSession.exercises);
+        if (s.sets === 0 && state.workoutLogs[workoutSession.key]) {
+          delete state.workoutLogs[workoutSession.key];
+          saveState();
+        }
+      }
+      workoutSession = null;
+      document.getElementById('workoutModal').classList.remove('visible');
+      render();
+    }
+
+    // Persist the working copy. Called on every edit — saveState() handles the
+    // localStorage write and the debounced Supabase push.
+    function commitWorkout() {
+      if (!workoutSession) return;
+      state.workoutLogs[workoutSession.key] = {
+        exercises: workoutSession.exercises.map(ex => ({
+          exerciseId: ex.exerciseId,
+          name: ex.name,
+          sets: ex.sets.map(s => ({ weight: s.weight, reps: s.reps })),
+        })),
+      };
+      saveState();
+    }
+
+    // Logging the first set of a session ticks the habit off as well.
+    function markWorkoutDone() {
+      if (!workoutSession) return;
+      const key = workoutSession.key;
+      if (state.completions[key]) return;
+      if (workoutSummary(workoutSession.exercises).sets === 0) return;
+      state.completions[key] = true;
+      saveState();
+      if (workoutSession.dateStr === selectedDate) {
+        const stats = getDailyStats(selectedDate);
+        if (stats.pct === 100) launchConfetti();
+      }
+    }
+
+    function renderWorkoutHeaderTotals() {
+      if (!workoutSession) return;
+      const s = workoutSummary(workoutSession.exercises);
+      const setLabel = `${s.sets} ${s.sets === 1 ? 'Satz' : 'Sätze'}`;
+      let html;
+      if (!s.sets) {
+        html = `<strong>&ndash;</strong><span>keine Sätze</span>`;
+      } else if (s.volume > 0) {
+        html = `<strong>${formatVolume(s.volume)} kg</strong><span>${setLabel}</span>`;
+      } else {
+        // Bodyweight-only session — a volume of 0 kg would say nothing.
+        html = `<strong>${setLabel}</strong><span>ohne Gewicht</span>`;
+      }
+      document.getElementById('workoutVolume').innerHTML = html;
+    }
+
+    function exerciseTrend(ex) {
+      const now = bestSet(ex.sets);
+      const prev = exerciseSessions(ex.exerciseId, workoutSession.dateStr)[0];
+      if (!now || !prev) return '';
+      const prevBest = bestSet(prev.sets);
+      if (!prevBest) return '';
+      const cmp = compareSets(now, prevBest);
+      if (cmp > 0) return '<span class="workout-trend up" title="besser als letzte Einheit">&#8593;</span>';
+      if (cmp < 0) return '<span class="workout-trend down" title="unter der letzten Einheit">&#8595;</span>';
+      return '<span class="workout-trend same" title="gleich wie letzte Einheit">=</span>';
+    }
+
+    function renderWorkoutBody() {
+      const body = document.getElementById('workoutBody');
+      if (!workoutSession) return;
+      const { exercises, dateStr, habit } = workoutSession;
+
+      if (!exercises.length) {
+        body.innerHTML = `<div class="workout-empty">
+          Noch keine Übungen für <strong>${escapeHtml(habit.name)}</strong>.<br>
+          Über <em>+ Übung</em> anlegen — sie wird gemerkt und ist beim nächsten
+          Mal wieder da.
+        </div>`;
+        renderWorkoutHeaderTotals();
+        return;
+      }
+
+      const inTemplate = new Set(workoutTemplate(habit.name).map(e => e.id));
+
+      body.innerHTML = exercises.map((ex, i) => {
+        const prev = exerciseSessions(ex.exerciseId, dateStr);
+        const last = prev[0];
+        const lastBest = last ? bestSet(last.sets) : null;
+        const historyOpen = workoutSession.openHistory === ex.exerciseId;
+        const target = exerciseTarget(habit.name, ex.name);
+        const prog = progressionSuggestion(habit.name, ex, dateStr);
+
+        const setRows = ex.sets.map((s, j) => `
+          <div class="workout-set">
+            <span class="workout-set-n">${j + 1}</span>
+            <input class="workout-input" type="text" inputmode="decimal"
+                   data-ex="${i}" data-set="${j}" data-field="weight"
+                   value="${s.weight ?? ''}" placeholder="kg" aria-label="Gewicht in kg">
+            <span class="workout-unit">kg</span>
+            <span class="workout-times">×</span>
+            <input class="workout-input" type="text" inputmode="numeric"
+                   data-ex="${i}" data-set="${j}" data-field="reps"
+                   value="${s.reps ?? ''}" placeholder="Wdh" aria-label="Wiederholungen">
+            <span class="workout-unit">Wdh</span>
+            <button class="workout-set-del" data-del-set="${i}:${j}" title="Satz löschen">&times;</button>
+          </div>`).join('');
+
+        return `
+          <div class="workout-ex">
+            <div class="workout-ex-head">
+              <button class="workout-ex-name" data-history="${escapeHtml(ex.exerciseId)}"
+                      title="Historie anzeigen">
+                ${escapeHtml(ex.name)}
+                <span class="workout-chev ${historyOpen ? 'open' : ''}">&#8250;</span>
+              </button>
+              ${exerciseTrend(ex)}
+              <button class="workout-ex-del" data-del-ex="${i}" title="Aus dieser Einheit entfernen">&times;</button>
+            </div>
+            ${target ? `<div class="workout-ex-target">${escapeHtml(describeTarget(target))}</div>` : ''}
+            <div class="workout-ex-last">
+              ${lastBest
+                ? `zuletzt: ${describeSet(lastBest)} · ${formatShortDate(last.date)}`
+                : (target ? `Start: ${escapeHtml(target.start)}` : 'noch keine Referenz')}
+            </div>
+            ${prog ? `<div class="workout-ex-prog">&#8593; Progression: ${formatKg(prog.weight)} kg${prog.perHand ? '/Hand' : ''}</div>` : ''}
+            ${historyOpen ? `
+              <div class="workout-hist">
+                ${prev.length
+                  ? prev.slice(0, 5).map(p => `
+                      <div class="workout-hist-row">
+                        <span class="workout-hist-date">${formatShortDate(p.date)}</span>
+                        <span class="workout-hist-sets">${p.sets.map(describeSet).join(' · ')}</span>
+                        <span class="workout-hist-vol">${formatVolume(p.sets.reduce((a, s) => a + setVolume(s), 0))} kg</span>
+                      </div>`).join('')
+                  : '<div class="workout-hist-row muted">Keine früheren Einheiten.</div>'}
+                ${inTemplate.has(ex.exerciseId)
+                  ? `<button class="workout-tpl-del" data-tpl-del="${escapeHtml(ex.exerciseId)}">Dauerhaft aus ${escapeHtml(habit.name)} entfernen</button>`
+                  : '<div class="workout-hist-row muted">Nicht im Template dieser Session.</div>'}
+              </div>` : ''}
+            <div class="workout-sets">${setRows}</div>
+            <button class="workout-add-set" data-add-set="${i}">+ Satz</button>
+          </div>`;
+      }).join('');
+
+      renderWorkoutHeaderTotals();
+      bindWorkoutBody();
+    }
+
+    function bindWorkoutBody() {
+      const body = document.getElementById('workoutBody');
+
+      // Typing must not re-render — that would steal focus mid-entry. Only the
+      // header totals and the trend arrows are refreshed in place.
+      body.querySelectorAll('.workout-input').forEach(input => {
+        input.oninput = () => {
+          const ex = workoutSession.exercises[Number(input.dataset.ex)];
+          if (!ex) return;
+          const set = ex.sets[Number(input.dataset.set)];
+          if (!set) return;
+          const raw = input.value.replace(',', '.').trim();
+          const num = raw === '' ? null : Number(raw);
+          set[input.dataset.field] = (num === null || Number.isNaN(num)) ? null : num;
+          commitWorkout();
+          markWorkoutDone();
+          renderWorkoutHeaderTotals();
+        };
+        input.onkeydown = (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        };
+      });
+
+      body.querySelectorAll('[data-add-set]').forEach(btn => {
+        btn.onclick = () => {
+          const ex = workoutSession.exercises[Number(btn.dataset.addSet)];
+          if (!ex) return;
+          // Prefill from the previous set of this session, else from the last
+          // time this exercise was logged. On the very first set, a due
+          // progression takes precedence — that weight is what the plan calls
+          // for, and it stays editable like any other field.
+          const prevSet = cleanSets(ex.sets).slice(-1)[0]
+            || bestSet((exerciseSessions(ex.exerciseId, workoutSession.dateStr)[0] || {}).sets);
+          const prog = ex.sets.length === 0
+            ? progressionSuggestion(workoutSession.habit.name, ex, workoutSession.dateStr)
+            : null;
+          if (prog) {
+            const target = exerciseTarget(workoutSession.habit.name, ex.name);
+            ex.sets.push({ weight: prog.weight, reps: target ? rangeBottom(target.reps) : null });
+          } else {
+            ex.sets.push(prevSet
+              ? { weight: prevSet.weight ?? null, reps: prevSet.reps ?? null }
+              : { weight: null, reps: null });
+          }
+          commitWorkout();
+          renderWorkoutBody();
+          const idx = ex.sets.length - 1;
+          const next = body.querySelector(`.workout-input[data-ex="${btn.dataset.addSet}"][data-set="${idx}"][data-field="weight"]`);
+          if (next) { next.focus(); next.select(); }
+        };
+      });
+
+      body.querySelectorAll('[data-del-set]').forEach(btn => {
+        btn.onclick = () => {
+          const [i, j] = btn.dataset.delSet.split(':').map(Number);
+          const ex = workoutSession.exercises[i];
+          if (!ex) return;
+          ex.sets.splice(j, 1);
+          commitWorkout();
+          renderWorkoutBody();
+        };
+      });
+
+      body.querySelectorAll('[data-del-ex]').forEach(btn => {
+        btn.onclick = () => {
+          workoutSession.exercises.splice(Number(btn.dataset.delEx), 1);
+          commitWorkout();
+          renderWorkoutBody();
+        };
+      });
+
+      body.querySelectorAll('[data-history]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.history;
+          workoutSession.openHistory = workoutSession.openHistory === id ? null : id;
+          renderWorkoutBody();
+        };
+      });
+
+      body.querySelectorAll('[data-tpl-del]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.tplDel;
+          const name = workoutSession.habit.name;
+          if (!confirm(`"${(workoutTemplate(name).find(e => e.id === id) || {}).name}" dauerhaft aus ${name} entfernen? Bereits geloggte Einheiten bleiben erhalten.`)) return;
+          state.workoutTemplates[name] = workoutTemplate(name).filter(e => e.id !== id);
+          workoutSession.openHistory = null;
+          saveState();
+          renderWorkoutBody();
+        };
+      });
+    }
+
+    // A new exercise goes into this session and into the session's template,
+    // so it comes back automatically next time.
+    function addWorkoutExercise(name) {
+      if (!workoutSession || !name) return;
+      const habitName = workoutSession.habit.name;
+      const tpl = workoutTemplate(habitName);
+      let entry = tpl.find(e => e.name.toLowerCase() === name.toLowerCase());
+      if (!entry) {
+        entry = { id: 'ex_' + generateId(), name };
+        tpl.push(entry);
+      }
+      if (!workoutSession.exercises.some(e => e.exerciseId === entry.id)) {
+        workoutSession.exercises.push({ exerciseId: entry.id, name: entry.name, sets: [] });
+      }
+      commitWorkout();
+      renderWorkoutBody();
     }
 
     function openEditModal(id) {
@@ -2913,6 +3818,34 @@
         if (e.key === 'Enter') saveEditedHabit();
       };
 
+      document.getElementById('closeWorkout').onclick = closeWorkoutModal;
+      document.getElementById('workoutModal').onclick = (e) => {
+        if (e.target === document.getElementById('workoutModal')) closeWorkoutModal();
+      };
+      document.getElementById('showWorkoutAdd').onclick = () => {
+        document.getElementById('workoutAddForm').classList.add('visible');
+        document.getElementById('showWorkoutAdd').style.display = 'none';
+        document.getElementById('workoutExInput').focus();
+      };
+      const closeWorkoutAdd = () => {
+        document.getElementById('workoutAddForm').classList.remove('visible');
+        document.getElementById('showWorkoutAdd').style.display = '';
+        document.getElementById('workoutExInput').value = '';
+      };
+      document.getElementById('workoutExCancel').onclick = closeWorkoutAdd;
+      document.getElementById('workoutExSave').onclick = () => {
+        const input = document.getElementById('workoutExInput');
+        const name = input.value.trim();
+        if (!name) return;
+        addWorkoutExercise(name);
+        input.value = '';
+        input.focus();
+      };
+      document.getElementById('workoutExInput').onkeydown = (e) => {
+        if (e.key === 'Enter') document.getElementById('workoutExSave').click();
+        if (e.key === 'Escape') { e.stopPropagation(); closeWorkoutAdd(); }
+      };
+
       // Day tag buttons
       document.querySelectorAll('.tag-add-btn').forEach(btn => {
         btn.onclick = () => openTagInput(btn.dataset.type);
@@ -2966,7 +3899,12 @@
       });
 
       document.onkeydown = (e) => {
-        if (e.key === 'Escape') closeEditModal();
+        if (e.key !== 'Escape') return;
+        if (document.getElementById('workoutModal').classList.contains('visible')) {
+          closeWorkoutModal();
+        } else {
+          closeEditModal();
+        }
       };
     }
 
