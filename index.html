@@ -1704,12 +1704,15 @@
       { icon: '🧃', name: 'Creatin', schedule: null },
       { icon: '🇪🇸', name: '30min Spanisch', schedule: null },
       // Training — active (Mon → Sat), structure from 7 Sep 2026
-      { icon: '⚡',  name: 'HYBRID: Foundation', schedule: { days: [1],   months: null }, activeFrom: '2026-09-07' },
-      { icon: '💪🏽', name: 'Strength A',         schedule: { days: [2],   months: null }, activeFrom: '2026-09-07' },
-      { icon: '🔥',  name: 'BUILD+',             schedule: { days: [3],   months: null }, activeFrom: '2026-09-07' },
-      { icon: '😴',  name: 'Rest Day',           schedule: { days: [4],   months: null }, activeFrom: '2026-09-07' },
-      { icon: '🏋️', name: 'Strength B',         schedule: { days: [5],   months: null }, activeFrom: '2026-09-07' },
-      { icon: '🏃',  name: 'Runclub',            schedule: { days: [6],   months: null }, activeFrom: '2026-08-01' },
+      // renamed 4 Nov 2026 (Strength A → Upper Body A, Strength B → Lower Body),
+      // Definition Workout added on Saturday alongside Runclub.
+      { icon: '⚡',   name: 'HYBRID: Foundation',  schedule: { days: [1],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '💪🏽',  name: 'Upper Body A',        schedule: { days: [2],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🔥',   name: 'BUILD+',              schedule: { days: [3],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '😴',   name: 'Rest Day',            schedule: { days: [4],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🏋️',  name: 'Lower Body',          schedule: { days: [5],   months: null }, activeFrom: '2026-09-07' },
+      { icon: '🏃',   name: 'Runclub',             schedule: { days: [6],   months: null }, activeFrom: '2026-08-01' },
+      { icon: '🏋️‍♂️', name: 'Definition Workout', schedule: { days: [6],   months: null }, activeFrom: '2026-11-04' },
       // Training — retired (Aug 2026 set)
       { icon: '🎱',  name: 'Beat81', schedule: { days: [1,3],   months: null }, activeFrom: '2026-08-01', activeUntil: '2026-09-06' },
       { icon: '💪🏽', name: 'Kraft',  schedule: { days: [2,4,5], months: null }, activeFrom: '2026-08-01', activeUntil: '2026-09-06' },
@@ -1734,8 +1737,8 @@
     const HABIT_ORDER = [
       '06:00 - 7:30', 'Eisbaden / Kryo', 'Sauna', 'Zähne putzen', 'Skincare',
       'Creatin', '30min Spanisch',
-      'HYBRID: Foundation', 'Strength A', 'BUILD+', 'Rest Day', 'Strength B', 'Runclub',
-      'Beat81', 'Kraft', 'Cardio', 'Strength', 'Spitfire',
+      'HYBRID: Foundation', 'Upper Body A', 'BUILD+', 'Rest Day', 'Lower Body', 'Runclub', 'Definition Workout',
+      'Strength A', 'Strength B', 'Beat81', 'Kraft', 'Cardio', 'Strength', 'Spitfire',
       'Stretching',
       '< 1h social', 'nüchtern', 'no smoke', 'no porn',
       '23:30', '00:00',
@@ -1759,7 +1762,10 @@
     // Only the two barbell sessions get an exercise log (weight x reps per set).
     // HYBRID (class format), BUILD+ (trainer-led), Runclub, Rest Day and
     // Stretching stay plain checkboxes.
-    const WORKOUT_HABITS = ['Strength A', 'Strength B'];
+    const WORKOUT_HABITS = [
+      'Upper Body A', 'Lower Body', 'Definition Workout',
+      'Strength A', 'Strength B', // defensive: old names a pre-migration device may still have
+    ];
 
     // The plan itself, straight from the coaching spec. This is reference data,
     // not state: state.workoutTemplates only stores { id, name }, and the
@@ -1770,7 +1776,41 @@
     //   step  — progression increment (spec §18); omit where it makes no sense
     //   perHand — dumbbell work, so the increment is per hand
     const WORKOUT_TEMPLATES = {
-      // Tuesday — lower-body strength + balanced upper-body hypertrophy
+      // Tuesday — upper-body hypertrophy (muscle building); Nov 2026 rework
+      // dropped the Back Squat opener; legs moved to the dedicated Lower Body day.
+      'Upper Body A': [
+        { name: 'Incline Chest Press Machine', sets: '3', reps: '8–10',  start: 'Startgewicht finden', rest: 'compound',   step: 2.5 },
+        { name: 'Chest-Supported Row Machine', sets: '3', reps: '8–10',  start: 'Startgewicht finden', rest: 'assistance', step: 2.5 },
+        { name: 'Lat Pulldown',                sets: '3', reps: '10–12', start: '50–60 kg',            rest: 'assistance', step: 2.5 },
+        { name: 'Lateral Raises',              sets: '3', reps: '12–15', start: '6–10 kg/Hand',        rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Dumbbell Biceps Curls',       sets: '3', reps: '10–12', start: '10–14 kg/Hand',       rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Cable Triceps Pushdown',      sets: '3', reps: '10–12', start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Cable Crunch',                sets: '3', reps: '12–15', start: 'nach Gefühl',         rest: 'core' },
+      ],
+      // Friday — pure leg strength + hypertrophy. Keep this day even if BUILD+
+      // took a lot out of the legs on Wed; adjust intensity using the recovery rule.
+      'Lower Body': [
+        { name: 'Squats',            sets: '3', reps: '8–10',  start: '60–70 kg',            rest: 'compound',   step: 2.5 },
+        { name: 'Romanian Deadlift', sets: '3', reps: '8–10',  start: '50–60 kg',            rest: 'compound',   step: 2.5 },
+        { name: 'Leg Press',         sets: '3', reps: '10–12', start: 'Startgewicht finden', rest: 'compound',   step: 5 },
+        { name: 'Leg Curl',          sets: '3', reps: '12–15', start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Calf Raises',       sets: '3', reps: '12–15', start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Cable Crunch',      sets: '3', reps: '12–15', start: 'nach Gefühl',         rest: 'core' },
+      ],
+      // Saturday afternoon — controlled-volume upper body after Runclub.
+      // Keep 1–2 reps in reserve; cut volume on heavy Runclub days.
+      'Definition Workout': [
+        { name: 'Incline Chest Press Machine', sets: '3', reps: '10–12', start: 'Startgewicht finden', rest: 'assistance', step: 2.5 },
+        { name: 'Seated Cable Row',            sets: '3', reps: '10–12', start: 'nach Gefühl',         rest: 'assistance', step: 2.5 },
+        { name: 'Lateral Raises',              sets: '3', reps: '12–15', start: '6–10 kg/Hand',        rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Lat Pulldown',                sets: '3', reps: '10–12', start: '50–60 kg',            rest: 'assistance', step: 2.5 },
+        { name: 'Biceps Curls',                sets: '3', reps: '12',    start: '10–14 kg/Hand',       rest: 'isolation',  step: 1, perHand: true },
+        { name: 'Triceps Pushdown',            sets: '3', reps: '12',    start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Face Pulls',                  sets: '2', reps: '15',    start: 'nach Gefühl',         rest: 'isolation',  step: 2.5 },
+        { name: 'Cable Crunch',                sets: '3', reps: '15',    start: 'nach Gefühl',         rest: 'core' },
+      ],
+      // Kept for historical sessions logged against the old Strength A / B names
+      // before the Nov 2026 rename+split. Not shown to new sessions.
       'Strength A': [
         { name: 'Back Squat',                  sets: '3', reps: '8–10',  start: '60–70 kg',            rest: 'compound',   step: 2.5 },
         { name: 'Incline Chest Press Machine', sets: '3', reps: '8–10',  start: 'Startgewicht finden', rest: 'compound',   step: 2.5 },
@@ -1964,6 +2004,7 @@
       let needsPush = false;
       if (typeof applyAugust2026 === 'function' && applyAugust2026()) needsPush = true;
       if (typeof applySeptember2026 === 'function' && applySeptember2026()) needsPush = true;
+      if (typeof applyNovember2026Plan === 'function' && applyNovember2026Plan()) needsPush = true;
       if (typeof seedWorkoutTemplates === 'function' && seedWorkoutTemplates()) needsPush = true;
       if (typeof applyHabitOrder === 'function' && applyHabitOrder()) needsPush = true;
       if (needsPush) await pushToCloud();
@@ -2225,6 +2266,69 @@
       if (new Date() < SEP_2026_START) return; // don't set the flag pre-Sep 7
       if (applySeptember2026()) saveState();
       localStorage.setItem('september_2026_rework_applied', '1');
+    })();
+
+    // Nov 2026 plan refresh: Strength A → Upper Body A (pure upper body, no
+    // more Back Squat opener), Strength B → Lower Body (pure legs), and a new
+    // Definition Workout on Saturday afternoon for upper-body volume after
+    // Runclub. Renames keep each habit's id so streak history survives.
+    const NOV_2026_PLAN_START = new Date('2026-11-04T00:00:00');
+    const NOV_2026_RENAMES = [
+      ['Strength A', 'Upper Body A', '💪🏽'],
+      ['Strength B', 'Lower Body',   '🏋️'],
+    ];
+
+    function applyNovember2026Plan() {
+      if (new Date() < NOV_2026_PLAN_START) return false;
+      let changed = false;
+
+      // 1. Rename the two strength habits in place — keeps id + completion history.
+      for (const [from, to, icon] of NOV_2026_RENAMES) {
+        for (const h of state.habits.filter(x => x.name === from)) {
+          h.name = to;
+          if (icon && h.icon !== icon) h.icon = icon;
+          changed = true;
+        }
+        // Move the per-user editable exercise list along with the rename.
+        if (state.workoutTemplates && state.workoutTemplates[from] && !state.workoutTemplates[to]) {
+          state.workoutTemplates[to] = state.workoutTemplates[from];
+          delete state.workoutTemplates[from];
+          changed = true;
+        }
+      }
+
+      // 2. Add Saturday's Definition Workout (own habit next to Runclub).
+      if (!state.habits.some(h => h.name === 'Definition Workout')) {
+        state.habits.push({
+          id: generateId(),
+          icon: '🏋️‍♂️',
+          name: 'Definition Workout',
+          schedule: { days: [6], months: null },
+          activeFrom: '2026-11-04',
+        });
+        changed = true;
+      }
+
+      // 3. Seed exercise lists for any Nov-2026 session type that doesn't have
+      //    one yet. Existing lists (potentially user-edited) stay untouched.
+      for (const name of ['Upper Body A', 'Lower Body', 'Definition Workout']) {
+        if (!state.workoutTemplates) state.workoutTemplates = {};
+        if (Array.isArray(state.workoutTemplates[name])) continue;
+        state.workoutTemplates[name] = (WORKOUT_TEMPLATES[name] || []).map(ex => ({
+          id: 'ex_' + generateId(),
+          name: ex.name,
+        }));
+        changed = true;
+      }
+
+      return changed;
+    }
+
+    (function migrateNovember2026Plan() {
+      if (localStorage.getItem('november_2026_plan_applied')) return;
+      if (new Date() < NOV_2026_PLAN_START) return;
+      if (applyNovember2026Plan()) saveState();
+      localStorage.setItem('november_2026_plan_applied', '1');
     })();
 
     // Create the per-session exercise templates once. Only fills a session
