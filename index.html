@@ -1399,6 +1399,86 @@
     .workout-hist-sets { flex: 1; }
     .workout-hist-vol { color: var(--text-secondary); white-space: nowrap; }
 
+    .workout-ex-edit {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .workout-ex-edit:hover { color: var(--accent); background: var(--accent-light); }
+
+    .workout-edit-form {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      margin-bottom: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .workout-edit-form label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: grid;
+      gap: 2px;
+    }
+    .workout-edit-form .edit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .workout-edit-form input,
+    .workout-edit-form select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .workout-edit-form input:focus,
+    .workout-edit-form select:focus { outline: none; border-color: var(--accent); }
+    .workout-edit-form .edit-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .workout-edit-form .edit-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .workout-edit-form .edit-actions .btn { flex: 1; padding: 7px 12px; font-size: 12px; }
+
+    .workout-chart {
+      margin: 6px 0 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+    }
+    .workout-chart svg { display: block; width: 100%; height: 56px; }
+    .workout-chart-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .workout-chart-empty {
+      font-size: 11px;
+      color: var(--text-secondary);
+      padding: 4px 0;
+    }
+
     .workout-tpl-del {
       margin-top: 6px;
       background: none;
@@ -3245,9 +3325,17 @@
     }
 
     // --- Plan targets & progression ---------------------------------------
-    // Targets come from WORKOUT_TEMPLATES by name, so a self-added exercise
-    // simply has none.
+    // Targets prefer the per-user editable entry in state.workoutTemplates
+    // (populated whenever the user edits an exercise in the modal). If the
+    // user hasn't touched it yet, fall back to the coaching-spec defaults in
+    // WORKOUT_TEMPLATES so historical sessions and fresh exercises still
+    // render target lines.
     function exerciseTarget(habitName, exerciseName) {
+      const stateEntry = (state.workoutTemplates[habitName] || [])
+        .find(e => e.name === exerciseName);
+      if (stateEntry && (stateEntry.sets || stateEntry.reps || stateEntry.rest)) {
+        return stateEntry;
+      }
       return (WORKOUT_TEMPLATES[habitName] || [])
         .find(e => e.name === exerciseName) || null;
     }
@@ -3338,7 +3426,7 @@
             sets: [],
           }));
 
-      workoutSession = { key, dateStr: selectedDate, habit, exercises, openHistory: null };
+      workoutSession = { key, dateStr: selectedDate, habit, exercises, openHistory: null, openEdit: null };
 
       document.getElementById('workoutTitle').innerHTML =
         `${habit.icon} ${escapeHtml(habit.name)}`;
@@ -3460,6 +3548,9 @@
             <button class="workout-set-del" data-del-set="${i}:${j}" title="Satz löschen">&times;</button>
           </div>`).join('');
 
+        const editOpen = workoutSession.openEdit === ex.exerciseId;
+        const chart = historyOpen ? miniChartSvg(ex.exerciseId) : '';
+
         return `
           <div class="workout-ex">
             <div class="workout-ex-head">
@@ -3469,17 +3560,21 @@
                 <span class="workout-chev ${historyOpen ? 'open' : ''}">&#8250;</span>
               </button>
               ${exerciseTrend(ex)}
+              <button class="workout-ex-edit" data-edit-ex="${escapeHtml(ex.exerciseId)}" title="Übung bearbeiten">&#9998;</button>
               <button class="workout-ex-del" data-del-ex="${i}" title="Aus dieser Einheit entfernen">&times;</button>
             </div>
-            ${target ? `<div class="workout-ex-target">${escapeHtml(describeTarget(target))}</div>` : ''}
-            <div class="workout-ex-last">
-              ${lastBest
-                ? `zuletzt: ${describeSet(lastBest)} · ${formatShortDate(last.date)}`
-                : (target ? `Start: ${escapeHtml(target.start)}` : 'noch keine Referenz')}
-            </div>
-            ${prog ? `<div class="workout-ex-prog">&#8593; Progression: ${formatKg(prog.weight)} kg${prog.perHand ? '/Hand' : ''}</div>` : ''}
+            ${editOpen ? exerciseEditForm(habit, ex) : `
+              ${target ? `<div class="workout-ex-target">${escapeHtml(describeTarget(target))}</div>` : ''}
+              <div class="workout-ex-last">
+                ${lastBest
+                  ? `zuletzt: ${describeSet(lastBest)} · ${formatShortDate(last.date)}`
+                  : (target && target.start ? `Start: ${escapeHtml(target.start)}` : 'noch keine Referenz')}
+              </div>
+              ${prog ? `<div class="workout-ex-prog">&#8593; Progression: ${formatKg(prog.weight)} kg${prog.perHand ? '/Hand' : ''}</div>` : ''}
+            `}
             ${historyOpen ? `
               <div class="workout-hist">
+                ${chart || '<div class="workout-chart-empty">Mindestens zwei Einheiten mit Gewicht für den Verlauf.</div>'}
                 ${prev.length
                   ? prev.slice(0, 5).map(p => `
                       <div class="workout-hist-row">
@@ -3591,6 +3686,163 @@
           renderWorkoutBody();
         };
       });
+
+      body.querySelectorAll('[data-edit-ex]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.editEx;
+          workoutSession.openEdit = workoutSession.openEdit === id ? null : id;
+          renderWorkoutBody();
+        };
+      });
+
+      body.querySelectorAll('[data-edit-cancel]').forEach(btn => {
+        btn.onclick = () => {
+          workoutSession.openEdit = null;
+          renderWorkoutBody();
+        };
+      });
+
+      body.querySelectorAll('[data-edit-save]').forEach(btn => {
+        btn.onclick = () => saveExerciseEdit(btn.dataset.editSave);
+      });
+    }
+
+    function saveExerciseEdit(exerciseId) {
+      if (!workoutSession) return;
+      const form = document.querySelector(`[data-edit-form="${exerciseId}"]`);
+      if (!form) return;
+      const habitName = workoutSession.habit.name;
+      const list = workoutTemplate(habitName);
+      let tplEntry = list.find(e => e.id === exerciseId);
+      if (!tplEntry) {
+        // Historical exercise not in the current template — promote it so
+        // the user's edits persist and future sessions include it.
+        tplEntry = { id: exerciseId, name: '' };
+        list.push(tplEntry);
+      }
+      const read = field => (form.querySelector(`[data-edit-field="${field}"]`)?.value ?? '').trim();
+      const stepRaw = read('step').replace(',', '.');
+      const stepVal = parseFloat(stepRaw);
+      const newName = read('name') || tplEntry.name;
+
+      tplEntry.name    = newName;
+      tplEntry.sets    = read('sets')  || undefined;
+      tplEntry.reps    = read('reps')  || undefined;
+      tplEntry.start   = read('start') || undefined;
+      tplEntry.rest    = read('rest')  || undefined;
+      tplEntry.step    = Number.isFinite(stepVal) ? stepVal : undefined;
+      tplEntry.perHand = form.querySelector('[data-edit-field="perHand"]')?.checked || undefined;
+
+      // Keep the working-copy exercise + any persisted log for this session
+      // in sync with the (possibly renamed) exercise.
+      const sessionEx = workoutSession.exercises.find(x => x.exerciseId === exerciseId);
+      if (sessionEx) sessionEx.name = newName;
+      const stored = state.workoutLogs[workoutSession.key];
+      if (stored && Array.isArray(stored.exercises)) {
+        const logEx = stored.exercises.find(x => x.exerciseId === exerciseId);
+        if (logEx) logEx.name = newName;
+      }
+
+      workoutSession.openEdit = null;
+      saveState();
+      renderWorkoutBody();
+    }
+
+    function exerciseEditForm(habit, ex) {
+      const stateEntry = (state.workoutTemplates[habit.name] || [])
+        .find(e => e.id === ex.exerciseId);
+      const fallback = exerciseTarget(habit.name, ex.name) || {};
+      const current = {
+        sets:    stateEntry?.sets    ?? fallback.sets    ?? '',
+        reps:    stateEntry?.reps    ?? fallback.reps    ?? '',
+        start:   stateEntry?.start   ?? fallback.start   ?? '',
+        rest:    stateEntry?.rest    ?? fallback.rest    ?? '',
+        step:    stateEntry?.step    ?? fallback.step    ?? '',
+        perHand: stateEntry?.perHand ?? fallback.perHand ?? false,
+      };
+      const restOpt = (val, label) =>
+        `<option value="${val}"${current.rest === val ? ' selected' : ''}>${label}</option>`;
+      return `
+        <div class="workout-edit-form" data-edit-form="${escapeHtml(ex.exerciseId)}">
+          <label>Name
+            <input type="text" data-edit-field="name" value="${escapeHtml(ex.name)}">
+          </label>
+          <div class="edit-row">
+            <label>Sätze
+              <input type="text" data-edit-field="sets" value="${escapeHtml(String(current.sets))}" placeholder="3">
+            </label>
+            <label>Wdh
+              <input type="text" data-edit-field="reps" value="${escapeHtml(String(current.reps))}" placeholder="8–10">
+            </label>
+          </div>
+          <label>Startgewicht / Hinweis
+            <input type="text" data-edit-field="start" value="${escapeHtml(String(current.start))}" placeholder="60–70 kg">
+          </label>
+          <div class="edit-row">
+            <label>Pause
+              <select data-edit-field="rest">
+                <option value="">—</option>
+                ${restOpt('compound',   'Compound (~3 min)')}
+                ${restOpt('assistance', 'Assistance (~2 min)')}
+                ${restOpt('isolation',  'Isolation (60–90 s)')}
+                ${restOpt('core',       'Core (60–90 s)')}
+              </select>
+            </label>
+            <label>Step (kg)
+              <input type="text" data-edit-field="step" value="${current.step !== '' ? formatKg(current.step) : ''}" placeholder="2.5">
+            </label>
+          </div>
+          <label class="edit-check">
+            <input type="checkbox" data-edit-field="perHand"${current.perHand ? ' checked' : ''}>
+            Step gilt pro Hand
+          </label>
+          <div class="edit-actions">
+            <button type="button" class="btn btn-secondary" data-edit-cancel="${escapeHtml(ex.exerciseId)}">Abbrechen</button>
+            <button type="button" class="btn btn-primary" data-edit-save="${escapeHtml(ex.exerciseId)}">Speichern</button>
+          </div>
+        </div>`;
+    }
+
+    // Per-exercise mini progression chart. Line of best-set weight across all
+    // past sessions. Needs at least two data points with weight > 0 to be
+    // meaningful; otherwise the caller falls back to a placeholder.
+    function miniChartSvg(exerciseId) {
+      const sessions = exerciseSessions(exerciseId, null).slice().reverse();
+      const points = sessions
+        .map(s => ({ date: s.date, weight: Number((bestSet(s.sets) || {}).weight) || 0 }))
+        .filter(p => p.weight > 0);
+      if (points.length < 2) return null;
+
+      const W = 240, H = 56, PAD = 6;
+      const weights = points.map(p => p.weight);
+      const minW = Math.min(...weights);
+      const maxW = Math.max(...weights);
+      const range = Math.max(maxW - minW, 1);
+      const xStep = (W - 2 * PAD) / (points.length - 1);
+      const yFor = w => H - PAD - ((w - minW) / range) * (H - 2 * PAD);
+
+      const pathD = points.map((p, i) => {
+        const x = PAD + i * xStep;
+        const y = yFor(p.weight);
+        return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      const dots = points.map((p, i) => {
+        const x = PAD + i * xStep;
+        const y = yFor(p.weight);
+        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="currentColor"/>`;
+      }).join('');
+
+      return `
+        <div class="workout-chart">
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="color:var(--accent)">
+            <path d="${pathD}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            ${dots}
+          </svg>
+          <div class="workout-chart-meta">
+            <span>${formatKg(points[0].weight)} kg · ${formatShortDate(points[0].date)}</span>
+            <span>${formatKg(points[points.length - 1].weight)} kg · ${formatShortDate(points[points.length - 1].date)}</span>
+          </div>
+        </div>`;
     }
 
     // A new exercise goes into this session and into the session's template,
