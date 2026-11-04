@@ -1633,6 +1633,7 @@
           <div class="habit-filter-chips">
             <button class="habit-filter-chip active" data-filter="alt">Alt</button>
             <button class="habit-filter-chip active" data-filter="neu">Neu</button>
+            <button class="habit-filter-chip active" data-filter="urlaub">Urlaub</button>
           </div>
         </div>
         <div id="yearHabitsList"></div>
@@ -1818,7 +1819,7 @@
     let currentTab = 'today';
     let overviewMonth = null;
     let overviewYear = null;
-    let yearHabitFilter = { alt: true, neu: true };
+    let yearHabitFilter = { alt: true, neu: true, urlaub: true };
 
     function todayStr() {
       const d = new Date();
@@ -2484,6 +2485,7 @@
       for (let day = 1; day <= daysInScope; day++) {
         const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         if (habit && !habitApplies(habit, ds)) continue;
+        if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
         applicable++;
         if (state.completions[`${ds}_${habitId}`]) done++;
       }
@@ -2506,6 +2508,7 @@
       let totalChecks = 0;
       for (let day = 1; day <= daysInScope; day++) {
         const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
         for (const h of state.habits) {
           if (!isHabitVisible(h)) continue;
           if (!habitApplies(h, ds)) continue;
@@ -2761,6 +2764,7 @@
       let totalChecks = 0;
       for (let day = 1; day <= daysInScope; day++) {
         const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
         for (const h of state.habits) {
           if (!isHabitVisible(h)) continue;
           if (!habitApplies(h, ds)) continue;
@@ -2784,6 +2788,7 @@
       for (let day = 1; day <= daysInMonth; day++) {
         const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         if (habit && !habitApplies(habit, ds)) continue;
+        if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
         totalDays++;
         if (state.completions[`${ds}_${habitId}`]) doneDays++;
       }
@@ -2804,6 +2809,7 @@
         for (let day = 1; day <= daysInMonth; day++) {
           const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           if (habit && !habitApplies(habit, ds)) continue;
+          if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
           totalDays++;
           if (state.completions[`${ds}_${habitId}`]) doneDays++;
         }
@@ -2824,6 +2830,7 @@
 
         for (let day = 1; day <= daysInMonth; day++) {
           const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          if (!yearHabitFilter.urlaub && isTripDay(ds)) continue;
           for (const h of state.habits) {
             if (!isHabitVisible(h)) continue;
             if (!habitApplies(h, ds)) continue;
@@ -3621,6 +3628,11 @@
       return state.dayTags[dateStr] || [];
     }
 
+    function isTripDay(dateStr) {
+      const tags = state.dayTags[dateStr];
+      return !!(tags && tags.some(t => t.type === 'trip'));
+    }
+
     function addDayTag(type, text) {
       if (!state.dayTags[selectedDate]) state.dayTags[selectedDate] = [];
       let emoji;
@@ -3888,7 +3900,9 @@
         renderYear();
       };
 
-      // Year view: Alt/Neu filter chips
+      // Year view: Alt/Neu/Urlaub filter chips. Chips are only visible on
+      // the Year view, so only re-render that; Today/Month pick up the new
+      // filter state on their next tab-switch render.
       document.querySelectorAll('.habit-filter-chip').forEach(chip => {
         chip.onclick = () => {
           const key = chip.dataset.filter;
